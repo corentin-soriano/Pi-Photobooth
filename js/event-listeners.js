@@ -13,11 +13,22 @@ $(document).ready(function() {
     $('#settings-open').hide();
     $('#temperature-close').hide();
 
+    /* Get translations */
+    translations()
+        .then(response => {
+            lang = response;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+
     /* Generate background-list */
     generateBackgroundList();
 
     /* Click on capture image button */
-    $('#captureImage').on('click', captureImage);
+    $('#captureImage').on('click', function() {
+        captureImage(lang);
+    });
     
     /* Click on review overlay close */
     $('#review-close').on('click', function() {

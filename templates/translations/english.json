@@ -1,0 +1,25 @@
+{
+    "_head": "HTML headers / titles.",
+    "html_lang": "en-US",
+    "photobooth": "Photobooth",
+
+    "_button": "Text displayed in buttons",
+    "close": "Close",
+    "print": "Print",
+    "take_picture": "Take Photo!",
+    "poweroff": "Power Off",
+    "reboot": "Reboot",
+
+    "_overlay": "Text displayed in overlays.",
+    "your_picture": "Your Photo",
+    "download_it": "Download it!",
+    "waiting_print": "Printing in progress, please wait a moment...",
+    "cpu_too_hot": "Excessive temperature (<span id=\"temp-value\">0</span>°C), please wait a few minutes.",
+    "wait_capture": "Smile!",
+    "error_capture": "Error capturing the image.",
+    "error_capture_network": "Error accessing the application server, image not saved.",
+
+    "_background": "Text displayed in backgrounds.",
+    "preserve_background": "Preserve Background",
+    "remove_background": "Remove Background"
+}

@@ -3,11 +3,36 @@
  */
 
 /**
+ * Fetch translations from the server.
+ *
+ * This function sends an AJAX request to fetch translations from the server.
+ * It returns a Promise that resolves with the response or rejects with an error.
+ *
+ * @returns {Promise<Object>} A promise that resolves with the response data.
+ */
+function translations() {
+
+    /* Request translations */
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: '/translations',
+            method: 'GET',
+            success: function(response) {
+                resolve(response);
+            },
+            error: function(error) {
+                reject(error);
+            }
+        });
+    });
+}
+
+/**
  * Hide countdown overlay and display review overlay.
  * 
- * @param message
- *      Text message to print on review overlay.
+ * @param {String} message Text message to print on review overlay.
  * 
+ * @param {String} img_path Path of picture.
  */
 function switchOverlays(message, img_path) {
 
@@ -33,8 +58,10 @@ function switchOverlays(message, img_path) {
 
 /**
  * Called when #captureImage button is pressed.
+ * 
+ * @param {string} lang Json containing all label translations.
  */
-function captureImage() {
+function captureImage(lang) {
 
     /* Countdown before capture */
     let counter = 3;
@@ -53,7 +80,7 @@ function captureImage() {
         } else {
 
             /* Display waiting message */
-            $('#countdown-overlay').text('Souriez !');
+            $('#countdown-overlay').text(lang.wait_capture);
 
             /* Get actual background */
             background = $('.background-item.selected').data('background');
@@ -64,7 +91,7 @@ function captureImage() {
                     if (response.ok) {
                         return response.text();
                     } else {
-                        switchOverlays('Erreur lors de la capture de l\'image.', null);
+                        switchOverlays(lang.error_capture, null);
                     }
                 })
                 .then (data => {
@@ -72,7 +99,7 @@ function captureImage() {
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    switchOverlays('Erreur d\'accès au serveur d\'application, image non sauvegardée.', null);
+                    switchOverlays(lang.error_capture_network, null);
                 });
 
             /* Stop countdown */
@@ -202,8 +229,7 @@ function checkCPUTemp() {
 /**
  * Poweroff or reboot raspberry.
  * 
- * @param {string} action
- *      Reboot or shutdown requested.
+ * @param {string} action Reboot or shutdown requested.
  */
 function power(action) {
 

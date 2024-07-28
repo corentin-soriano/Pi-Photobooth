@@ -1,0 +1,25 @@
+{
+    "_head": "Entêtes HTML / titres.",
+    "html_lang": "fr-FR",
+    "photobooth": "Photobooth",
+
+    "_button": "Texte affiché dans les boutons",
+    "close": "Fermer",
+    "print": "Imprimer",
+    "take_picture": "Photo !",
+    "poweroff": "Éteindre",
+    "reboot": "Redémarrer",
+
+    "_overlay": "Texte affiché dans les overlays.",
+    "your_picture": "Votre photo",
+    "download_it": "Téléchargez la !",
+    "waiting_print": "Impression en cours, veuillez patienter quelques instants...",
+    "cpu_too_hot": "Température excessive (<span id=\"temp-value\">0</span>°C), veuillez patienter quelques minutes.",
+    "wait_capture": "Souriez !",
+    "error_capture": "Erreur lors de la capture de l'image.",
+    "error_capture_network": "Erreur d'accès au serveur d'application, image non sauvegardée.",
+
+    "_background": "Texte affiché dans arrières-plans.",
+    "preserve_background": "Conserver l'arrière plan",
+    "remove_background": "Retirer l'arrière plan"
+}

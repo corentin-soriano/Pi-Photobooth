@@ -12,6 +12,7 @@ from gpiozero import CPUTemperature
 from includes.camera import Camera
 from includes.config import ConfigFile
 from includes.gpio import ManageGPIO
+from includes.language import Language
 from includes.misc import str_to_bool, generate_qrcode
 from includes.webdav import WebDAVSync
 
@@ -19,6 +20,11 @@ from includes.webdav import WebDAVSync
 # Init various objects.
 app = Flask(__name__)
 config = ConfigFile()
+
+# Init lang translations.
+lang = Language(config.get('main', 'lang'))
+
+# Init camera.
 camera = Camera(int(config.get('camera', 'width')), 
                 int(config.get('camera', 'height')))
 
@@ -134,7 +140,7 @@ def index():
     # Restricted enpoint.
     check_ip_restrict(request.remote_addr)
 
-    return render_template('index.html')
+    return render_template('index.html', lang=lang)
 
 
 @app.route('/video_feed/<path:backgound>')
@@ -219,7 +225,7 @@ def serve_js(filename):
 
     return send_from_directory('js', filename)
 
-# Send stylesheet files.
+
 @app.route('/css/<path:filename>')
 def serve_css(filename):
     """
@@ -240,7 +246,19 @@ def serve_css(filename):
 
     return send_from_directory('templates/css', filename)
 
-# Send images files.
+
+@app.route('/translations')
+def get_translations():
+    """
+    Send json translations to frontend.
+
+    Returns:
+        Response: The response object containing json translations.
+    """
+
+    return jsonify(lang.readFile())
+
+
 @app.route('/images/<path:filename>')
 def serve_images(filename):
     """

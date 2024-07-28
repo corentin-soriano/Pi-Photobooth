@@ -1,7 +1,7 @@
 <!Doctype html>
-<html lang="fr-FR">
+<html lang="{{ lang.get('html_lang') }}">
   <head>
-    <title>Photobooth</title>
+    <title>{{ lang.get('photobooth') }}</title>
     <!-- Meta -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
@@ -13,38 +13,45 @@
     <link rel="stylesheet" href="{{ url_for('serve_css', filename='styles.css') }}">
   </head>
   <body>
-    <h1>Photobooth</h1>
+    <h1>{{ lang.get('photobooth') }}</h1>
 
     <div id="settings-open"></div>
     <div id="settings-overlay" class="fullscreen-overlay"><!-- Overlay for countdown display -->
-      <div id="settings-close" class="close-button">Fermer</div>
-      <div id="shutdown" class="power">Éteindre</div>
-      <div id="reboot" class="power">Redémarrer</div>
-    </div><!-- #review-overlay -->
+      <div id="settings-close" class="close-button">{{ lang.get('close') }}</div>
+      <div id="shutdown" class="power">{{ lang.get('poweroff') }}</div>
+      <div id="reboot" class="power">{{ lang.get('reboot') }}</div>
+    </div><!-- #settings-overlay -->
 
     <div id="temperature-overlay" class="fullscreen-overlay"><!-- Overlay for countdown display -->
-      <div id="temperature-close" class="close-button">Fermer</div>
-      <p>Température excessive (<span id="temp-value">0</span>°C), veuillez patienter quelques minutes.</p>
-    </div><!-- #review-overlay -->
+      <div id="temperature-close" class="close-button">{{ lang.get('close') }}</div>
+      <p>{{ lang.get('cpu_too_hot') | safe }}</p>
+    </div><!-- #temperature-overlay -->
 
 
     <div id="countdown-overlay" class="fullscreen-overlay"></div><!-- Overlay for countdown display -->
 
     <div id="review-overlay" class="fullscreen-overlay"><!-- Overlay for countdown display -->
-      <div id="review-close" class="close-button">Fermer</div>
+      <div id="review-close" class="close-button">{{ lang.get('close') }}</div>
       <div id="review-message"></div>
       <div id="review">
         <div id="photo">
-          Votre photo
+          {{ lang.get('your_picture') }}
           <img />
         </div><!--
      --><div id="empty"></div><!--
      --><div id="qrcode">
-          Téléchargez la !
+          {{ lang.get('download_it') }}
           <img />
         </div>
         <br/>
-        <div id="print" class="button">Imprimer</div>
+        <div id="print" class="button">{{ lang.get('print') }}</div>
+        <div id="print-overlay" class="fullscreen-overlay">
+          <div id="print-close" class="close-button">{{ lang.get('close') }}</div>
+          <div>
+            <img src="css/pixbay-loading.gif">
+            <p>{{ lang.get('waiting_print') }}</p>
+          </div>
+        </div><!-- #print-overlay -->
       </div>
     </div><!-- #review-overlay -->
 
@@ -52,14 +59,14 @@
       <div id="preview-container"><!-- Container for displaying camera preview. -->
         <img id="preview-img" src="{{ url_for('video_feed', backgound='nobackground') }}" />
         <br/>
-        <div id="captureImage" class="button">Photo !</div>
+        <div id="captureImage" class="button">{{ lang.get('take_picture') }}</div>
       </div><!-- #preview-container --><!-- 
         Comment linefeeds to avoid blank space between containers.
   
    --><div id="background-container"><!-- Container for displaying backgrounds. -->
         <ul id="background-list">
-          <li class="background-item selected" data-background="nobackground"><p>Conserver l'arrière plan</p></li>
-          <li class="background-item" data-background="removebackground"><p>Retirer l'arrière plan</p></li>
+          <li class="background-item selected" data-background="nobackground"><p>{{ lang.get('preserve_background') }}</p></li>
+          <li class="background-item" data-background="removebackground"><p>{{ lang.get('remove_background') }}</p></li>
         </ul>
       </div><!-- #background-container -->
     </div><!-- #main-container -->
