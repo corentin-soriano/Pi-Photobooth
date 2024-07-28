@@ -174,13 +174,17 @@ function checkGPIOAdmin() {
 /**
  * Check if RPI is not overheating and block access if necessary.
 */
-function checkCPUTemp() {
+function checkSystemHealth() {
 
-    /* GET admin button state */
+    /* GET system health from backend */
     $.ajax({
-        url: '/health/temp',
+        url: '/health',
         method: 'GET',
         success: function(response) {
+
+            /**
+             * Handle CPU temperature.
+             */
 
             /* Get displayed temp */
             displayed_temp = $('#temp-value').text();
@@ -225,7 +229,7 @@ function checkCPUTemp() {
 
         },
         error: function(error) {
-            console.error('Error checking CPU temperature:', error);
+            console.error('Error getting system health:', error);
         }
     });
 }

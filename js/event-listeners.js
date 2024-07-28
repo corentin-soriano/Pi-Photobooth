@@ -87,8 +87,8 @@ $(document).ready(function() {
     /* Check if admin button is enabled */
     setInterval(checkGPIOAdmin, 5000);
 
-    /* Check CPU temperature */
-    setInterval(checkCPUTemp, 5000);
+    /* Check system health */
+    setInterval(checkSystemHealth, 5000);
 
     $('#settings input').on('change', sendSettings);
 

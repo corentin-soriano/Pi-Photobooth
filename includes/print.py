@@ -131,7 +131,7 @@ class Printer:
             return None
 
 
-    def monitor(self, job_id):
+    def monitor_job(self, job_id):
         """
         Monitor printing job.
 
@@ -164,3 +164,29 @@ class Printer:
             print(f'Error monitoring job: {e}')
             self._printer = None
             return False
+
+
+    def monitor_printer(self):
+        """
+        Monitor printer state.
+
+        Returns:
+            bool: json with printer and paper state.
+        """
+
+        # Default = don't need paper.
+        need_paper = False
+
+        # Check only if printer available.
+        if self._printer:
+            reasons = self._printer.getPrinters()[self._printer_name]['printer-state-reasons']
+
+            # Need add paper.
+            if 'media-empty' in reasons or 'media-needed' in reasons:
+                need_paper = True
+
+        return {
+            "available": self._printer is not None,
+            "need_paper": need_paper,
+        }
+

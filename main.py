@@ -241,7 +241,7 @@ def print_file(action, job):
     elif action == 'monitoring':
         result = {
             "job_id": job,
-            "state": printer.monitor(job)
+            "state": printer.monitor_job(job)
         }
 
     # Unknown endpoint.
@@ -424,20 +424,24 @@ def gpio_state(name):
     return jsonify({"state": gpio_state})
 
 
-@app.route('/health/temp')
-def get_cpu_temp():
+@app.route('/health')
+def get_health():
     """
-    Get the CPU temperature.
+    Get system health (temperature, printer, ...).
 
     Returns:
-        str: Current CPU Temperature in json format.
+        str: Current system health in json format.
     """
 
     # Restricted enpoint.
     check_ip_restrict(request)
 
-    cpu = CPUTemperature()
-    return jsonify({"temp": cpu.temperature})
+    response = jsonify({
+        "temp": CPUTemperature().temperature,
+        "printer": printer.monitor_printer(),
+    })
+
+    return response
 
 
 @app.route('/power/<path:action>')
