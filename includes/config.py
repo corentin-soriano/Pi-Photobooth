@@ -26,7 +26,7 @@ class ConfigFile:
         self._filename = filename
 
         # Init configparser.
-        self._config = configparser.ConfigParser()
+        self._config = configparser.RawConfigParser()
 
 
     def get(self, section, key):
