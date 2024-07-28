@@ -1,0 +1,263 @@
+
+/**
+ * Reset defaults values.
+ */
+
+ * {
+    /* Always mask cursor (touchscreen) */
+    cursor: none !important;
+ }
+ 
+ @font-face {
+     font-family: Quicksand-Regular;
+     src: url("Quicksand-Regular.ttf");
+ }
+
+ body {
+    background-color: #EEE;
+    font-family: Quicksand-Regular;
+    /*, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;*/
+    margin: 0;
+}
+
+/**
+ * Elements by name.
+ */
+
+h1 {
+    text-align: center;
+    margin: 10px 0;
+}
+
+/**
+ * Elements by class.
+ */
+
+.background-item {
+    height: 100px;
+    margin-right: 5px;
+    padding: 10px 0;
+    text-align: center;
+    width: 100%;
+}
+
+.background-item.selected {
+    background-color: rgb(199, 199, 199);
+    /*border: 1px solid #999;*/
+    border-radius: 5px;
+}
+
+.background-item img {
+    max-height: 100%;
+    max-width: 100%;
+}
+
+.background-item p {
+    margin: 0;
+    line-height: 100px;
+    padding: 0;
+}
+
+/* Button capture */
+.button {
+    background-color: rgb(0, 154, 206);
+    border-radius: 5px;
+    border: 1px solid grey;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2em;
+    line-height: 100%;
+    font-weight: 700;
+    margin: auto;
+    padding: 5px;
+    width: 200px;
+}
+
+.button::before {
+    background-size: cover;
+    border-radius: 5px;
+    content: '';
+    display: inline-block;
+    margin-right: 5px;
+    width: 30px; height: 30px;
+}
+
+.close-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    right: 0;
+    padding: 15px 25px;
+}
+
+.close-button::after {
+    background-image: url("openmoji-cross.svg");
+    background-size: cover;
+    content: '';
+    margin-left: 5px;
+    width: 30px; height: 30px;
+}
+
+.fullscreen-overlay {
+    background: rgba(0, 0, 0, 0.85);
+    color: white;
+    display: flex;
+    height: 100%;
+    left: 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.power {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    padding: 15px 25px;
+    top: 0;
+    width: 125px;
+}
+
+.power::after {
+    background-size: cover;
+    content: '';
+    filter: invert(1);
+    margin-left: 5px;
+    width: 30px; height: 30px;
+}
+
+/**
+ * Elements by id.
+ */
+
+#background-container {
+    display: inline-block;
+    flex: 1;
+    padding-right: 5px;
+    overflow: auto;
+}
+
+#background-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+#captureImage::before {
+    background-image: url("openmoji-camera.svg");
+}
+
+/* Countdown when capture button is pressed */ 
+#countdown-overlay {
+    font-size: 3em;
+}
+
+#main-container {
+    display: flex;
+    align-items: stretch;
+    max-height: 400px;
+}
+
+#preview-container {
+    display: inline-block;
+    text-align: center;
+    width: 70%;
+}
+
+/* Camera preview */
+#preview-img {
+    background-color: #FFF;
+    max-height: 350px;
+}
+
+/* Review photo after capture */
+#review-message {
+    font-size: 3em;
+    text-align: center;
+}
+
+#review {
+    padding: 2%;
+    width: 100%;
+}
+
+#review #empty {
+    display: inline-block;
+    width: 5%;
+}
+
+#review #photo {
+    display: inline-block;
+    text-align: center;
+    width: 64%;
+}
+
+#review #photo img {
+    display: block;
+    margin-top: 5px;
+    width: 100%;
+}
+
+#review #print {
+    margin: auto;
+    margin-left: 50%;
+    margin-top: 20px;
+    /* (200px + 2px border + 20px padding) / 2 = -111px */
+    transform: translate(-111px, 0);
+}
+
+#review #print::before {
+    background-image: url("openmoji-printer.svg");
+}
+
+#review #qrcode {
+    display: inline-block;
+    text-align: center;
+    transform: translate(0, 100px);
+    width: 30%;
+}
+
+#review #qrcode img {
+    display: block;
+    width: 100%;
+}
+
+#review-overlay {
+    display: flex;
+}
+
+#reboot {
+    transform: translate(-50%, 0);
+}
+
+#reboot::after {
+    background-image: url("openmoji-arrow-circle.svg");
+}
+
+#settings-open {
+    background-color: rgb(0, 154, 206);
+    background-image: url("openmoji-settings.svg");
+    background-size: cover;
+    border-radius: 5px;
+    border: 1px solid grey;
+    position: fixed;
+    top: 10px; right: 10px;
+    width: 30px; height: 30px;
+}
+
+#shutdown {
+    transform: translate(50%, 0);
+}
+
+#shutdown::after {
+    background-image: url("openmoji-power.svg");
+}

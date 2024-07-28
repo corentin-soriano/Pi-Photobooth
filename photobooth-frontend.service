@@ -1,0 +1,13 @@
+[Unit]
+Description=Chromium Kiosk Mode
+After=graphical.target photobooth-backend.service
+
+[Service]
+User=pi
+Environment=XAUTHORITY=/home/pi/.Xauthority
+Environment=DISPLAY=:0
+ExecStart=/usr/bin/chromium-browser --kiosk http://127.0.0.1:5000/
+Restart=always
+
+[Install]
+WantedBy=graphical.target

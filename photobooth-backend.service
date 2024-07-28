@@ -1,0 +1,13 @@
+[Unit]
+Description=Photobooth server
+After=network.target
+
+[Service]
+ExecStart=/root/photobooth/main.py
+WorkingDirectory=/root/photobooth
+SyslogIdentifier=photobooth
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

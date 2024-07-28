@@ -1,0 +1,8 @@
+.vscode/
+config.ini
+includes/__pycache__
+images/*
+!images/empty
+backgrounds/*
+!backgrounds/empty
+.lgd-nfy0

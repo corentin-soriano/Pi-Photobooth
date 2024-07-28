@@ -1,0 +1,69 @@
+<!Doctype html>
+<html lang="fr-FR">
+  <head>
+    <title>Photobooth</title>
+    <!-- Meta -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <!-- JS -->
+    <script src="{{ url_for('serve_js', filename='jquery-3.7.1.min.js') }}"></script>
+    <script src="{{ url_for('serve_js', filename='functions.js') }}"></script>
+    <script src="{{ url_for('serve_js', filename='event-listeners.js') }}"></script>
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('serve_css', filename='styles.css') }}">
+  </head>
+  <body>
+    <h1>Photobooth</h1>
+
+    <div id="settings-open"></div>
+    <div id="settings-overlay" class="fullscreen-overlay"><!-- Overlay for countdown display -->
+      <div id="settings-close" class="close-button">Fermer</div>
+      <div id="shutdown" class="power">Éteindre</div>
+      <div id="reboot" class="power">Redémarrer</div>
+    </div><!-- #review-overlay -->
+
+    <div id="temperature-overlay" class="fullscreen-overlay"><!-- Overlay for countdown display -->
+      <div id="temperature-close" class="close-button">Fermer</div>
+      <p>Température excessive (<span id="temp-value">0</span>°C), veuillez patienter quelques minutes.</p>
+    </div><!-- #review-overlay -->
+
+
+    <div id="countdown-overlay" class="fullscreen-overlay"></div><!-- Overlay for countdown display -->
+
+    <div id="review-overlay" class="fullscreen-overlay"><!-- Overlay for countdown display -->
+      <div id="review-close" class="close-button">Fermer</div>
+      <div id="review-message"></div>
+      <div id="review">
+        <div id="photo">
+          Votre photo
+          <img />
+        </div><!--
+     --><div id="empty"></div><!--
+     --><div id="qrcode">
+          Téléchargez la !
+          <img />
+        </div>
+        <br/>
+        <div id="print" class="button">Imprimer</div>
+      </div>
+    </div><!-- #review-overlay -->
+
+    <div id="main-container">
+      <div id="preview-container"><!-- Container for displaying camera preview. -->
+        <img id="preview-img" src="{{ url_for('video_feed', backgound='nobackground') }}" />
+        <br/>
+        <div id="captureImage" class="button">Photo !</div>
+      </div><!-- #preview-container --><!-- 
+        Comment linefeeds to avoid blank space between containers.
+  
+   --><div id="background-container"><!-- Container for displaying backgrounds. -->
+        <ul id="background-list">
+          <li class="background-item selected" data-background="nobackground"><p>Conserver l'arrière plan</p></li>
+          <li class="background-item" data-background="removebackground"><p>Retirer l'arrière plan</p></li>
+        </ul>
+      </div><!-- #background-container -->
+    </div><!-- #main-container -->
+
+  </body>
+</html>
+
