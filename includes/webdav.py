@@ -164,6 +164,11 @@ class WebDAVSync:
         webdav = self._webdav
 
         try:
+
+            # Create remote folder if not exists.
+            if not webdav.exists(remote_path):
+                webdav.mkdir(remote_path)
+
             # Read remote and local files.
             remote_files = webdav.ls(remote_path)
             local_files = os.listdir(path)
@@ -188,6 +193,8 @@ class WebDAVSync:
                     if difftime > wait_time:
                         os.remove(filepath)
 
+            return 0
+
         except Exception as e:
             print(f"Error removing {path}: {str(e)}")
             return 1
@@ -211,6 +218,14 @@ class WebDAVSync:
         webdav = self._webdav
 
         try:
+
+            # Create remote folder if not exists.
+            if not webdav.exists(remote_path):
+                webdav.mkdir(remote_path)
+
+                # Nothing to pull, exit function.
+                return 0
+
             # Read remote and local files.
             remote_files = webdav.ls(remote_path)
             local_files = os.listdir(path)
@@ -229,6 +244,8 @@ class WebDAVSync:
                     local_filepath = path + '/' + file
                     remote_filepath = remote_path + '/' + file
                     webdav.download(remote_filepath, local_filepath)
+
+            return 0
 
         except Exception as e:
             print(f"Error pulling {path}: {str(e)}")
