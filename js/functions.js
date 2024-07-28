@@ -23,7 +23,7 @@ function switchOverlays(message, img_path) {
         $('#review-message').hide();
         $('#review').show();
         $('#review #photo img').attr('src', img_path);
-        $('#review #qrcode img').attr('src', 'qrcode/' + img_path);
+        $('#review #qrcode img').attr('src', 'qrcode/' + img_path.split('/').pop());
     } else {
         $('#review-message').show();
         $('#review').hide();
@@ -72,7 +72,7 @@ function captureImage() {
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    switchOverlays('Erreur d\'accès à l\'API, image non sauvegardée.', null);
+                    switchOverlays('Erreur d\'accès au serveur d\'application, image non sauvegardée.', null);
                 });
 
             /* Stop countdown */

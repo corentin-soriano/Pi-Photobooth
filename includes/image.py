@@ -40,9 +40,9 @@ class ImageProcessor:
             text (str): Text to write.
             offset (tuple): Offset of position (x, y) based on from_edge and img/font size.
             from_edge (str): Position from this edge.
-            font_size (int, optionnal): Font size, default = 20px.
-            font_familly (str, optionnal): Font familly used.
-            color (tuple, optionnal): RGB color of the text. Default = white.
+            font_size (int, optional): Font size, default = 20px.
+            font_familly (str, optional): Font familly used.
+            color (tuple, optional): RGB color of the text. Default = white.
         """
 
         # Dict with requested parameters for this text.
@@ -66,7 +66,7 @@ class ImageProcessor:
 
         Args:
             text (str): Name of background file to use.
-            quality (bool, optionnal): Improve quality or speed.
+            quality (bool, optional): Improve quality or speed.
         """
 
         # Dict with requested parameters for this text.

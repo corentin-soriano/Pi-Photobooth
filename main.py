@@ -3,6 +3,7 @@
 import os
 import signal
 import sys
+import threading
 from datetime import datetime
 from flask import Flask, jsonify, render_template, Response, url_for, send_from_directory, send_file, abort, request
 from gpiozero import CPUTemperature
@@ -12,6 +13,7 @@ from includes.camera import Camera
 from includes.config import ConfigFile
 from includes.gpio import ManageGPIO
 from includes.misc import str_to_bool, generate_qrcode
+from includes.webdav import WebDAVSync
 
 
 # Init various objects.
@@ -19,9 +21,20 @@ app = Flask(__name__)
 config = ConfigFile()
 camera = Camera(int(config.get('camera', 'width')), 
                 int(config.get('camera', 'height')))
+
+# Get GPIO configuration and init ManageGPIO object.
 GPIO_LEGACY = str_to_bool(config.get('gpio', 'legacy_mode'))
 GPIO_ADMIN_BTN = int(config.get('gpio', 'admin_button'))
 gpio = ManageGPIO(GPIO_LEGACY)
+
+# Init webdav object if enabled feature.
+if str_to_bool(config.get('dav', 'enabled')):
+    webdav = WebDAVSync(config.get('dav', 'endpoint'),
+                        config.get('dav', 'username'),
+                        config.get('dav', 'password'))
+else:
+    webdav = None
+
 
 def handle_exit(*args):
     """
@@ -39,6 +52,9 @@ def handle_exit(*args):
                     SystemExit with a status code of 0.
     """
 
+    # Send stop event to threads.
+    stop_event.set()
+
     # Close camera before exit.
     camera.close_camera()
 
@@ -50,6 +66,10 @@ def handle_exit(*args):
             GPIO_ADMIN_BTN,
         ]
         gpio.cleanup(gpio_pins)
+    
+    # Wait for threads to terminate.
+    if webdav:
+        dav_thread.join()
 
     # Exit python application.
     sys.exit(0)
@@ -120,7 +140,7 @@ def index():
 @app.route('/video_feed/<path:backgound>')
 def video_feed(backgound):
     """
-    Stream video feed from the camera and optionnaly add a background on image.
+    Stream video feed from the camera and optionaly add a background on image.
 
     Args:
         background (str): The path variable indicating whether to include a background. 
@@ -170,6 +190,10 @@ def capture(backgound):
     # Send error message to frontend.
     if error != None:
         return error
+
+    # Backup picture to WebDAV server (async job).
+    if webdav:
+        webdav.add_operation('push', filename)
 
     # Send filename to frontend.
     return filename
@@ -374,6 +398,33 @@ def power(action):
     return jsonify({"state": state})
 
 
+def dav_sync_thread(stop_event):
+    """
+    Thread for dav sync.
+
+    Args:
+        stop_event (Event): Thread stop event.
+    """
+
+    while not stop_event.is_set():
+
+        # Flush all requested operations.
+        webdav.sync(stop_event)
+
+        # Remove obsolete backgrounds and images.
+        stop_event.wait(1)
+        webdav.remove_obsolete('images')
+        stop_event.wait(1)
+        webdav.remove_obsolete('backgrounds')
+
+        # Get remote backgrounds.
+        stop_event.wait(1)
+        webdav.pull_folder('backgrounds')
+
+        # Wait before restart.
+        stop_event.wait(1)
+
+
 if __name__ == '__main__':
 
     # Init camera in preview mode.
@@ -385,6 +436,13 @@ if __name__ == '__main__':
 
     # Init GPIO PINs.
     gpio.setup_pin(GPIO_ADMIN_BTN)
+
+    # Run async job in new thread for dav sync.
+    if webdav:
+        stop_event = threading.Event()
+        dav_thread = threading.Thread(target=dav_sync_thread,
+                                      args=(stop_event,))
+        dav_thread.start()
 
     # Run flask server app.
     listen = config.get('main', 'listen')

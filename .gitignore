@@ -6,3 +6,5 @@ images/*
 backgrounds/*
 !backgrounds/empty
 .lgd-nfy0
+.webdav-sync
+.webdav-sync.tmp

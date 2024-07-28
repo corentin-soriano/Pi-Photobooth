@@ -74,7 +74,7 @@ class ManageGPIO:
         Close GPIO.
 
         Args:
-            pin (list, optionnal): pins numbers to close when not in legacy mode.
+            pin (list, optional): pins numbers to close when not in legacy mode.
         """
 
         if self._legacy:

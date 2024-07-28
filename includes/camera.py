@@ -129,7 +129,7 @@ class Camera:
             add_date (bool): Write current date on captured image.
             add_time (bool): Write current time on captured image.
             add_text (string): Write text message on captured image.
-            font (string, optionnal): Font familly used on text message.
+            font (string, optional): Font familly used on text message.
 
         Returns:
             str or None: Error message or None if success.
@@ -173,7 +173,7 @@ class Camera:
                         processor.add_text(add_text, (0, 30),
                                         'center_bottom', font_size=75)
 
-                    # Optionnal custom font selected.
+                    # Optional custom font selected.
                     else:
                         processor.add_text(add_text, (0, 30), 'center_bottom',
                                            font_size=75, font_familly=font)

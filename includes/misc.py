@@ -78,4 +78,3 @@ def generate_qrcode(data):
 
     # Send qrcode.
     return qr_bytes
-
