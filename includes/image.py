@@ -60,20 +60,20 @@ class ImageProcessor:
         self._operations.append(text_params)
 
 
-    def background(self, name, quality = True):
+    def background(self, name, capture = True):
         """
         Store requested text and parameters to write on commit.
 
         Args:
             text (str): Name of background file to use.
-            quality (bool, optional): Improve quality or speed.
+            capture (bool, optional): Improve quality (capture) or speed (preview).
         """
 
         # Dict with requested parameters for this text.
         background_params = {
             'type': 'background',
             'name': name,
-            'quality': quality,
+            'capture': capture,
         }
 
         # Append params to pending operations.
@@ -101,7 +101,7 @@ class ImageProcessor:
         if background:
 
             # Remove old background with good quality (spend much time).
-            if background['quality']:
+            if background['capture']:
 
                 # u2netp 1s, u2net =  2.5s
                 model_name = "u2netp"
@@ -118,7 +118,7 @@ class ImageProcessor:
                 gray = cv2.cvtColor(image_np, cv2.COLOR_RGB2GRAY)
 
                 # Apply a thresholding method to create a mask.
-                _, mask = cv2.threshold(gray, 200, 255, cv2.THRESH_BINARY)
+                _, mask = cv2.threshold(gray, 180, 255, cv2.THRESH_BINARY)
 
                 # Reverse Mask to remove white pixels.
                 mask = 255 - mask
@@ -138,7 +138,11 @@ class ImageProcessor:
                 # Resize background to foreground img size if needed.
                 if img.size != bg_img.size:
                     bg_img = bg_img.resize(img.size)
-                
+
+                # Mirror background.
+                if not background['capture']:
+                    bg_img = bg_img.transpose(Image.FLIP_LEFT_RIGHT)
+
                 # Combine main image and background.
                 img = Image.alpha_composite(bg_img, img)
         
