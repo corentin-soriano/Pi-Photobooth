@@ -243,6 +243,45 @@ h1 {
     background-image: url("openmoji-arrow-circle.svg");
 }
 
+#refresh {
+    background-color: rgb(0, 154, 206);
+    border: 1px solid grey;
+    border-radius: 5px;
+    color: white;
+    display: flex;
+    font-weight: 600;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 8px;
+    position: fixed;
+    top: 10px; right: 45px;
+}
+
+#refresh::before {
+    background-image: url("openmoji-arrow-circle.svg");
+    background-size: cover;
+    content: '';
+    display: inline-block;
+    margin-right: 5px;
+    width: 30px; height: 30px;
+}
+
+#settings {
+    position: relative;
+    width: 60%;
+}
+
+#settings label {
+    line-height: 3em;
+}
+
+#settings input {
+    position: absolute;
+    padding: 5px;
+    margin-top: 1em;
+    right: 0;
+}
+
 #settings-open {
     background-color: rgb(0, 154, 206);
     background-image: url("openmoji-settings.svg");

@@ -15,11 +15,26 @@
   <body>
     <h1>{{ lang.get('photobooth') }}</h1>
 
+    <div id="refresh">{{ lang.get('refresh') }}</div>
     <div id="settings-open"></div>
     <div id="settings-overlay" class="fullscreen-overlay"><!-- Overlay for countdown display -->
       <div id="settings-close" class="close-button">{{ lang.get('close') }}</div>
       <div id="shutdown" class="power">{{ lang.get('poweroff') }}</div>
       <div id="reboot" class="power">{{ lang.get('reboot') }}</div>
+      <div id="settings">
+        <label>
+          {{ lang.get('display_date_pictures') }}
+          <input id="setting-display-date" type="checkbox" />
+        </label><br/>
+        <label>
+          {{ lang.get('display_time_pictures') }}
+          <input id="setting-display-time" type="checkbox" />
+        </label><br/>
+        <label>
+          {{ lang.get('display_message_pictures') }}
+          <input id="setting-display-message" type="text" >
+        </label>
+      </div><!-- #settings -->
     </div><!-- #settings-overlay -->
 
     <div id="temperature-overlay" class="fullscreen-overlay"><!-- Overlay for countdown display -->

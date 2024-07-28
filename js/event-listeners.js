@@ -11,6 +11,7 @@ $(document).ready(function() {
 
     /* Hide buttons by default */
     $('#settings-open').hide();
+    $('#refresh').hide();
     $('#temperature-close').hide();
 
     /* Get translations */
@@ -45,6 +46,8 @@ $(document).ready(function() {
 
     /* Click on settings open button */
     $('#settings-open').on('click', function() {
+        /* Refresh form content and display overlay */
+        getSettings();
         $('#settings-overlay').show();
     });
 
@@ -56,6 +59,11 @@ $(document).ready(function() {
     /* Hide overlay */
     $('#temperature-close').on('click', function() {
         $('#temperature-overlay').hide();
+    });
+
+    /* Refresh button */
+    $('#refresh').on('click', function() {
+        location.reload();
     });
 
     /* Power buttons */
@@ -71,6 +79,8 @@ $(document).ready(function() {
 
     /* Check CPU temperature */
     setInterval(checkCPUTemp, 5000);
+
+    $('#settings input').on('change', sendSettings);
 
 });
 
@@ -88,7 +98,7 @@ function bgItemEventListenerAdd() {
         $(this).addClass('selected');
 
         /* Change video feed */
-        background = $(this).data('background');
+        let background = $(this).data('background');
         $('#preview-img').attr('src', '/video_feed/' + background);
 
     });

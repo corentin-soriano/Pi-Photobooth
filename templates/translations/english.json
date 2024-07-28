@@ -9,6 +9,7 @@
     "take_picture": "Take Photo!",
     "poweroff": "Power Off",
     "reboot": "Reboot",
+    "refresh": "Refresh",
 
     "_overlay": "Text displayed in overlays.",
     "your_picture": "Your Photo",
@@ -18,6 +19,9 @@
     "wait_capture": "Smile!",
     "error_capture": "Error capturing the image.",
     "error_capture_network": "Error accessing the application server, image not saved.",
+    "display_date_pictures": "Display date on photos",
+    "display_time_pictures": "Display time on photos",
+    "display_message_pictures": "Message to display on photos:",
 
     "_background": "Text displayed in backgrounds.",
     "preserve_background": "Preserve Background",

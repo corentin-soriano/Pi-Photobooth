@@ -9,6 +9,7 @@
     "take_picture": "Photo !",
     "poweroff": "Éteindre",
     "reboot": "Redémarrer",
+    "refresh": "Raffraîchir",
 
     "_overlay": "Texte affiché dans les overlays.",
     "your_picture": "Votre photo",
@@ -18,6 +19,9 @@
     "wait_capture": "Souriez !",
     "error_capture": "Erreur lors de la capture de l'image.",
     "error_capture_network": "Erreur d'accès au serveur d'application, image non sauvegardée.",
+    "display_date_pictures": "Afficher la date sur les photos",
+    "display_time_pictures": "Afficher l'heure sur les photos",
+    "display_message_pictures": "Message à afficher sur les photos :",
 
     "_background": "Texte affiché dans arrières-plans.",
     "preserve_background": "Conserver l'arrière plan",

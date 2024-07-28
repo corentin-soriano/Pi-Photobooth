@@ -61,7 +61,7 @@ class ConfigFile:
         self._config.read(self._filename)
 
         # Update configuration.
-        self._config[section][key] = value
+        self._config[section][key] = str(value)
 
         # Save updated configuration.
         with open(self._filename, 'w') as configfile:

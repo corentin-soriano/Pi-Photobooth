@@ -83,7 +83,7 @@ function captureImage(lang) {
             $('#countdown-overlay').text(lang.wait_capture);
 
             /* Get actual background */
-            background = $('.background-item.selected').data('background');
+            let background = $('.background-item.selected').data('background');
 
             /* Take photo */
             fetch('/capture/' + background)
@@ -123,7 +123,7 @@ function generateBackgroundList() {
             /* Json list with all available backgrounds */
             data.forEach(function(imageName) {
                 /* Add new item list for each available background */
-                var listItem = '<li class="background-item" data-background="' + imageName + '"><img src="/background/' + imageName + '" /></li>';
+                let listItem = '<li class="background-item" data-background="' + imageName + '"><img src="/background/' + imageName + '" /></li>';
                 $('#background-list').append(listItem);
             });
 
@@ -151,6 +151,7 @@ function checkGPIOAdmin() {
             if (response.state === true) {
                 /* Display settings button */
                 $('#settings-open').show();
+                $('#refresh').show();
                 $('#temperature-close').show();
             }
             /* Admin mode disabled */
@@ -158,6 +159,7 @@ function checkGPIOAdmin() {
                 /* Hide settings button and overlay */
                 $('#settings-overlay').hide();
                 $('#settings-open').hide();
+                $('#refresh').hide();
                 $('#temperature-close').hide();
             }
         },
@@ -239,6 +241,41 @@ function power(action) {
         method: 'GET',
         success: function(response) {
             console.log(response.state);
+        },
+        error: function(error) {
+            console.error('Error:', error);
+        }
+    });
+}
+
+/**
+ * Send updated settings to server.
+ */
+function sendSettings() {
+
+    /* Get form data */
+    let data = {
+        enable_date: $('#setting-display-date').is(':checked'),
+        enable_time: $('#setting-display-time').is(':checked'),
+        message: $('#setting-display-message').val(),
+    };
+
+    /* Send form data */
+    $.ajax({
+        url: '/settings',
+        method: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: function(response) {
+
+            /* Convert python bool to js bool */
+            enable_date = response.enable_date.toLowerCase() === 'true';
+            enable_time = response.enable_time.toLowerCase() === 'true';
+
+            /* Update form data */
+            $('#setting-display-date').prop('checked', enable_date);
+            $('#setting-display-time').prop('checked', enable_time);
+            $('#setting-display-message').val(response.message);
         },
         error: function(error) {
             console.error('Error:', error);

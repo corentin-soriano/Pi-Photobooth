@@ -422,6 +422,46 @@ def power(action):
     return jsonify({"state": state})
 
 
+@app.route('/settings', methods=['GET', 'PUT'])
+def handle_settings():
+    """
+    Handle settings updates from frontend.
+
+    Returns:
+        Json with new settings values.
+    """
+
+    # Update settings.
+    if request.method == 'PUT':
+
+        # Get json body content.
+        enable_date = request.json.get('enable_date')
+        enable_time = request.json.get('enable_time')
+        message = request.json.get('message')
+
+
+        if enable_date != config.get('main', 'enable_date'):
+            if isinstance(enable_date, bool):
+                config.set('main', 'enable_date', enable_date)
+
+        if enable_time != config.get('main', 'enable_time'):
+            if isinstance(enable_time, bool):
+                config.set('main', 'enable_time', enable_time)
+
+        if message != config.get('main', 'message'):
+            config.set('main', 'message', message)
+
+    # Get settings.
+    settings = {
+        'enable_date': config.get('main', 'enable_date'),
+        'enable_time': config.get('main', 'enable_time'),
+        'message': config.get('main', 'message'),
+    }
+
+    # Send settings to client.
+    return jsonify(settings)
+
+
 def dav_sync_thread(stop_event):
     """
     Thread for dav sync.
