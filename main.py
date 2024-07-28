@@ -368,6 +368,9 @@ def get_cpu_temp():
         str: Current CPU Temperature in json format.
     """
 
+    # Restricted enpoint.
+    check_ip_restrict(request)
+
     cpu = CPUTemperature()
     return jsonify({"temp": cpu.temperature})
 
@@ -383,6 +386,9 @@ def power(action):
     Returns:
         str: state of request.
     """
+
+    # Restricted enpoint.
+    check_ip_restrict(request)
 
     if (action == 'reboot'):
         state = "Reboot requested."
