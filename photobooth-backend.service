@@ -3,8 +3,8 @@ Description=Photobooth server
 After=network.target
 
 [Service]
-ExecStart=/root/photobooth/main.py
-WorkingDirectory=/root/photobooth
+ExecStart=/opt/Pi-Photobooth/main.py
+WorkingDirectory=/opt/Pi-Photobooth
 SyslogIdentifier=photobooth
 Restart=always
 RestartSec=30
