@@ -168,25 +168,35 @@ class Camera:
                 # Add text on image.
                 if add_text != '':
 
+                    # Center, 30px bottom.
+                    text_position = (0, 30)
+                    font_size = 75
+
                     # Default font familly.
                     if font == '':
-                        processor.add_text(add_text, (0, 30),
-                                        'center_bottom', font_size=75)
+                        processor.add_text(add_text, text_position,
+                                        'center_bottom', font_size=font_size)
 
                     # Optional custom font selected.
                     else:
-                        processor.add_text(add_text, (0, 30), 'center_bottom',
-                                           font_size=75, font_familly=font)
+                        processor.add_text(add_text, text_position, 'center_bottom',
+                                           font_size=font_size, font_familly=font)
 
                 # Add current date on image.
                 if add_date == True:
+
+                    # 30px right, 20px top.
+                    text_position = (30, 20)
                     date = datetime.now().strftime("%d/%m/%Y")
-                    processor.add_text(date, (20, 20), 'top_right')
+                    processor.add_text(date, text_position, 'top_right')
 
                 # Add current time on image.
                 if add_time == True:
+
+                    # 30px right, 70px top.
+                    text_position = (30, 70)
                     time = datetime.now().strftime("%H:%M:%S     ")
-                    processor.add_text(time, (20, 70), 'top_right')
+                    processor.add_text(time, text_position, 'top_right')
 
                 # Commit all pending operations.
                 processor.commit()

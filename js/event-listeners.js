@@ -5,6 +5,7 @@ $(document).ready(function() {
 
     /* Hide overlays */
     $('#countdown-overlay').hide();
+    $('#print-overlay').hide();
     $('#review-overlay').hide();
     $('#settings-overlay').hide();
     $('#temperature-overlay').hide();
@@ -13,6 +14,7 @@ $(document).ready(function() {
     $('#settings-open').hide();
     $('#refresh').hide();
     $('#temperature-close').hide();
+    $('#print-close').hide();
 
     /* Get translations */
     translations()
@@ -42,6 +44,14 @@ $(document).ready(function() {
         $('#review #photo img').attr('src', '');
         $('#review #qrcode img').attr('src', '');
 
+    });
+
+    /* Print button */
+    $('#print').on('click', send_print);
+
+    /* Hide print overlay */
+    $('#print-close').on('click', function() {
+        $('#print-overlay').hide();
     });
 
     /* Click on settings open button */

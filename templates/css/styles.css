@@ -179,6 +179,14 @@ h1 {
     max-height: 350px;
 }
 
+#print-overlay div {
+    text-align: center;
+}
+
+#print-overlay img {
+    width: 50px;
+}
+
 /* Review photo after capture */
 #review-message {
     font-size: 3em;

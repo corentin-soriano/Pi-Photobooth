@@ -58,3 +58,7 @@ reboot
 # Check state:
 systemctl status photobooth-{frontend,backend}.service
 ```
+
+## Add support for auto-cutting paper (Brother VC-500W only)
+- Follow instructions on https://github.com/corentin-soriano/vc-500w_autocut
+- In your config.ini, set cups printer as `Brother_VC-500W_Gateway`.

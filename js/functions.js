@@ -153,6 +153,7 @@ function checkGPIOAdmin() {
                 $('#settings-open').show();
                 $('#refresh').show();
                 $('#temperature-close').show();
+                $('#print-close').show();
             }
             /* Admin mode disabled */
             else {
@@ -161,6 +162,7 @@ function checkGPIOAdmin() {
                 $('#settings-open').hide();
                 $('#refresh').hide();
                 $('#temperature-close').hide();
+                $('#print-close').hide();
             }
         },
         error: function(error) {
@@ -249,6 +251,106 @@ function power(action) {
 }
 
 /**
+ * Monitor print job and close overlay.
+ * 
+ * @param {int} job_id ID of job to monitor
+ */
+function wait_print_job(job_id) {
+
+    /* Request informations */
+    $.ajax({
+        url: '/print/monitoring/' + job_id,
+        method: 'GET',
+        success: function(response) {
+
+            /* Print not completed */
+            if (response.state === true) {
+
+                /* Wait 500ms and retry */
+                setTimeout(function() {
+                    wait_print_job(response.job_id);
+                }, 500);
+            }
+
+            /* Print completed, block the user for a few more seconds */
+            else {
+                setTimeout(function() {
+                    $('#print-overlay').hide();
+                }, 30000);
+            }
+        },
+        error: function(error) {
+            console.error('Error:', error);
+
+            /* Avoid infinite loading if connection error */
+            $('#print-overlay').hide();
+        }
+    });
+}
+
+/**
+ * Send a picture to printer.
+ */
+function send_print() {
+
+    /* Show printing overlay */
+    $('#print-overlay').show();
+
+    /* Get picture path */
+    let path = $('#review #photo img').attr('src');
+
+    /* Request print */
+    $.ajax({
+        url: '/print/start/' + path,
+        method: 'GET',
+        success: function(response) {
+            console.log(response.job_id);
+            wait_print_job(response.job_id);
+        },
+        error: function(error) {
+            console.error('Error:', error);
+        }
+    });
+}
+
+/**
+ * Refresh settings form values from given json.
+ * 
+ * @param {Object} settings Json formatted settings.
+ */
+function refreshSettingsForm(settings) {
+
+    /* Convert python bool to js bool */
+    enable_date = settings.enable_date.toLowerCase() === 'true';
+    enable_time = settings.enable_time.toLowerCase() === 'true';
+
+    /* Update form data */
+    $('#setting-display-date').prop('checked', enable_date);
+    $('#setting-display-time').prop('checked', enable_time);
+    $('#setting-display-message').val(settings.message);
+}
+
+/**
+ * Get settings from server.
+ */
+function getSettings() {
+
+    /* Request settings values */
+    $.ajax({
+        url: '/settings',
+        method: 'GET',
+        success: function(response) {
+
+            /* Update form data */
+            refreshSettingsForm(response);
+        },
+        error: function(error) {
+            console.error('Error:', error);
+        }
+    });
+}
+
+/**
  * Send updated settings to server.
  */
 function sendSettings() {
@@ -268,14 +370,8 @@ function sendSettings() {
         data: JSON.stringify(data),
         success: function(response) {
 
-            /* Convert python bool to js bool */
-            enable_date = response.enable_date.toLowerCase() === 'true';
-            enable_time = response.enable_time.toLowerCase() === 'true';
-
             /* Update form data */
-            $('#setting-display-date').prop('checked', enable_date);
-            $('#setting-display-time').prop('checked', enable_time);
-            $('#setting-display-message').val(response.message);
+            refreshSettingsForm(response);
         },
         error: function(error) {
             console.error('Error:', error);

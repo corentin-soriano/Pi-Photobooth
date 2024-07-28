@@ -14,6 +14,7 @@ from includes.config import ConfigFile
 from includes.gpio import ManageGPIO
 from includes.language import Language
 from includes.misc import str_to_bool, generate_qrcode
+from includes.print import Printer
 from includes.webdav import WebDAVSync
 
 
@@ -27,6 +28,17 @@ lang = Language(config.get('main', 'lang'))
 # Init camera.
 camera = Camera(int(config.get('camera', 'width')), 
                 int(config.get('camera', 'height')))
+
+# Override cups host if requested in config file.
+if config.get('cups', 'host') != '':
+    os.environ['CUPS_SERVER'] = config.get('cups', 'host')
+
+# Override cups port if requested in config file.
+if config.get('cups', 'port') != '':
+    os.environ['CUPS_PORT'] = config.get('cups', 'port')
+
+# Init printer.
+printer = Printer(config.get('cups', 'printer'))
 
 # Get GPIO configuration and init ManageGPIO object.
 GPIO_LEGACY = str_to_bool(config.get('gpio', 'legacy_mode'))
@@ -203,6 +215,41 @@ def capture(backgound):
 
     # Send filename to frontend.
     return filename
+
+
+@app.route('/print/<action>/<path:job>')
+def print_file(action, job):
+    """
+    Launch print file and monitor printing job.
+
+    Args:
+        action (str): Requested action (start/monitoring/...).
+        job (str): Filename or job id.
+
+    Returns:
+        Response: The response object containing json status.
+    """
+
+    # Print picture.
+    if action == 'start':
+        result = {
+            "filename": job,
+            "job_id": printer.print(job)
+        }
+
+    # Monitoring pending job.
+    elif action == 'monitoring':
+        result = {
+            "job_id": job,
+            "state": printer.monitor(job)
+        }
+
+    # Unknown endpoint.
+    else:
+        return '', 404
+
+    # Return json with result.
+    return jsonify(result)
 
 
 @app.route('/js/<path:filename>')
