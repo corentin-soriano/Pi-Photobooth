@@ -135,10 +135,15 @@ class WebDAVSync:
             if not webdav.exists(os.path.dirname(remote_path)):
                 webdav.mkdir(os.path.dirname(remote_path))
 
-            # Upload file.
-            webdav.upload(local_path, remote_path)
+            # Upload file if local still exists.
+            if os.path.exists(local_path):
+                webdav.upload(local_path, remote_path)
+                print(f"Image {local_path} uploaded successfully.")
+            
+            # Print debug message but don't fail, file will be removed from list.
+            else:
+                print(f"Image {local_path} does not exist.")
 
-            print(f"Image {local_path} uploaded successfully.")
             return 0
 
         except Exception as e:
