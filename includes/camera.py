@@ -20,6 +20,7 @@ from datetime import datetime
 from io import BytesIO
 from libcamera import Transform
 from picamera2 import Picamera2
+from time import sleep
 
 # Includes from this project.
 from includes.image import ImageProcessor
@@ -45,8 +46,8 @@ class Camera:
             preview_height (int): height (px) for preview image.
         """
 
-        # Init Picamera2 object.
-        self._picam2 = Picamera2()
+        # Init _picam2 as None.
+        self._picam2 = None
 
         # Init preview and capture configurations.
         self._configuration_preview = {"format": "RGB888",
@@ -64,6 +65,16 @@ class Camera:
                             False if switching to capture mode.
             reduce_size (bool): Request a lower size.
         """
+
+        if self._picam2 is None:
+            try:
+                # Init Picamera2 object.
+                self._picam2 = Picamera2()
+            except Exception as e:
+                # Log any other exceptions.
+                print(f"General error: {e}")
+                self._picam2 = None
+                return
 
         # Get attributes.
         picam2 = self._picam2
@@ -99,7 +110,8 @@ class Camera:
         Stop camera to avoid busy device.
         """
 
-        self._picam2.stop()
+        if self._picam2 is not None:
+            self._picam2.stop()
 
 
     def generate_video(self, background):
@@ -109,6 +121,14 @@ class Camera:
         Args:
             background (str):
         """
+
+        # Wait for the camera to be ready.
+        while self._picam2 is None:
+            self.initialize_camera(True)
+
+            # short wait before retry.
+            if self._picam2 is None:
+                sleep(1)
 
         # Get attributes.
         picam2 = self._picam2

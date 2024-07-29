@@ -23,7 +23,7 @@ After=graphical.target photobooth-backend.service
 User=pi
 Environment=XAUTHORITY=/home/pi/.Xauthority
 Environment=DISPLAY=:0
-ExecStart=/bin/bash -c '/bin/rm -rf /home/pi/.config/chromium/ && /usr/bin/chromium-browser --kiosk http://127.0.0.1:5000/'
+ExecStart=/bin/bash -c 'while ! /usr/bin/nc -z localhost 5000 -w1; do echo "Waiting for backend..."; /usr/bin/sleep 1; done; /bin/rm -rf /home/pi/.config/chromium/ && /usr/bin/chromium-browser --kiosk http://127.0.0.1:5000/'
 Restart=always
 RestartSec=30
 

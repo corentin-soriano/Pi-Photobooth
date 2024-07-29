@@ -28,7 +28,7 @@ raspi-config
 
 ## Dependencies:
 ```bash
-apt install python3-flask python3-picamera2 python3-qrcode python3-easywebdav git
+apt install python3-flask python3-picamera2 python3-qrcode python3-easywebdav git ncat
 
 # Not available from apt:
 pip3 install rembg pydavsync --break-system-packages
