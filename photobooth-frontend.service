@@ -17,7 +17,7 @@
 
 [Unit]
 Description=Chromium Kiosk Mode
-After=graphical.target photobooth-backend.service
+After=network.target graphical.target
 
 [Service]
 User=pi
