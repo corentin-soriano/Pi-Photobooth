@@ -48,7 +48,8 @@ class ImageProcessor:
 
 
     def add_text(self, text, offset, from_edge, font_size=50,
-                 font_familly='Quicksand-Medium.ttf', color=(255, 255, 255)):
+                 font_familly='Quicksand-Medium.ttf', color=(255, 255, 255),
+                 outline_color = (0,0,0), outline_width = 3):
         """
         Store requested text and parameters to write on commit.
 
@@ -59,6 +60,8 @@ class ImageProcessor:
             font_size (int, optional): Font size, default = 20px.
             font_familly (str, optional): Font familly used.
             color (tuple, optional): RGB color of the text. Default = white.
+            outline_color (tuple, optional): RGB color of text outline. Default = Black.
+            outline_width (int, optional): Width of outline text. Default = 3.
         """
 
         # Dict with requested parameters for this text.
@@ -70,6 +73,8 @@ class ImageProcessor:
             'font_size': font_size,
             'font_familly': font_familly,
             'color': color,
+            'outline_color': outline_color,
+            'outline_width': outline_width,
         }
 
         # Append params to pending operations.
@@ -189,10 +194,30 @@ class ImageProcessor:
             }
 
             # Position to write.
-            final_position = positions[params['from_edge']]
-            
+            x, y = positions[params['from_edge']]
+
+            # Draw text outline with position adjustment.
+            for adj in range(-params['outline_width'], params['outline_width'] + 1):
+
+                # Draws the text slightly shifted to the right. 
+                draw.text((x + adj, y), params['text'], font=font_param, fill=params['outline_color'])
+                # Draws the text slightly shifted to the left. 
+                draw.text((x - adj, y), params['text'], font=font_param, fill=params['outline_color'])
+                # Draws the text slightly shifted to the bottom. 
+                draw.text((x, y + adj), params['text'], font=font_param, fill=params['outline_color'])
+                # Draws the text slightly shifted to the top. 
+                draw.text((x, y - adj), params['text'], font=font_param, fill=params['outline_color'])
+                # Draws the text slightly shifted to the right and bottom. 
+                draw.text((x + adj, y + adj), params['text'], font=font_param, fill=params['outline_color'])
+                # Draws the text slightly shifted to the left and top. 
+                draw.text((x - adj, y - adj), params['text'], font=font_param, fill=params['outline_color'])
+                # Draws the text slightly shifted to the right and top. 
+                draw.text((x + adj, y - adj), params['text'], font=font_param, fill=params['outline_color'])
+                # Draws the text slightly shifted to the left and bottom. 
+                draw.text((x - adj, y + adj), params['text'], font=font_param, fill=params['outline_color'])
+
             # Add Text to an image
-            draw.text(final_position, params['text'], font=font_param, fill=params['color'])
+            draw.text((x, y), params['text'], font=font_param, fill=params['color'])
 
         # Save the edited image
         self._image.seek(0)
