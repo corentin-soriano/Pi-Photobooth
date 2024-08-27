@@ -373,6 +373,7 @@ def serve_background(background):
         try:
             files = os.listdir(backgrounds_dir)
             image_files = [file for file in files if file.lower().endswith(('.jpg', '.jpeg', '.png'))]
+            image_files.sort()
             return jsonify(image_files)
         except Exception as e:
             return jsonify({"error": str(e)}), 500
