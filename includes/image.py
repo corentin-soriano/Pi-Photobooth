@@ -18,6 +18,7 @@
 
 import cv2
 import numpy
+import os
 from PIL import Image, ImageDraw, ImageFont
 from rembg import remove, new_session
 
@@ -150,8 +151,8 @@ class ImageProcessor:
                 # Convert back the resulting image to PIL format.
                 img = Image.fromarray(result)
 
-            # Specific case 'removebackground' => just remove background.
-            if background['name'] != 'removebackground':
+            # Check if requested background exists.
+            if os.path.exists('backgrounds/' + background['name']):
 
                 # Open background image.
                 bg_img = Image.open('backgrounds/' + background['name']).convert("RGBA")

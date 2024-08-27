@@ -24,6 +24,5 @@
     "display_message_pictures": "Message to display on photos:",
 
     "_background": "Text displayed in backgrounds.",
-    "preserve_background": "Preserve Background",
-    "remove_background": "Remove Background"
+    "preserve_background": "Preserve Background"
 }

@@ -24,6 +24,5 @@
     "display_message_pictures": "Message à afficher sur les photos :",
 
     "_background": "Texte affiché dans arrières-plans.",
-    "preserve_background": "Conserver l'arrière plan",
-    "remove_background": "Retirer l'arrière plan"
+    "preserve_background": "Ne pas modifier l'arrière plan"
 }
