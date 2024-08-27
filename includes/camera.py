@@ -114,12 +114,13 @@ class Camera:
             self._picam2.stop()
 
 
-    def generate_video(self, background):
+    def generate_video(self, background, green_background = False):
         """
         Generate video stream from camera.
 
         Args:
-            background (str):
+            background (str): Background requested.
+            green_background (bool, optional): Enable green background remove mode.
         """
 
         # Wait for the camera to be ready.
@@ -145,7 +146,7 @@ class Camera:
                 processor = ImageProcessor(stream)
 
                 # Send background instructions.
-                processor.background(background, False)
+                processor.background(background, True, True, green_background)
 
                 # Commit all pending operations.
                 processor.commit()
@@ -155,13 +156,15 @@ class Camera:
                   b'Content-Type: image/jpeg\r\n\r\n' + stream.read() + b'\r\n')
 
 
-    def capture_img(self, filename, background, add_date, add_time, add_text, font = ''):
+    def capture_img(self, filename, background, green_background, disable_ai_cut, add_date, add_time, add_text, font = ''):
         """
         Capture image in full resolution from camera.
 
         Args:
             filename (str): Name of image file to save.
             background (str): Name of background image file.
+            green_background (bool): Using green screen background.
+            disable_ai_cut (bool): Disable background cut by AI.
             add_date (bool): Write current date on captured image.
             add_time (bool): Write current time on captured image.
             add_text (string): Write text message on captured image.
@@ -199,7 +202,7 @@ class Camera:
                 # Add background on image.
                 if background != 'nobackground':
                     # Send background instructions.
-                    processor.background(background)
+                    processor.background(background, green_background = green_background, disable_ai_cut = disable_ai_cut)
 
                 # Add text on image.
                 if add_text != '':

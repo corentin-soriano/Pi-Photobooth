@@ -171,8 +171,8 @@ def index():
     return render_template('index.html', lang=lang)
 
 
-@app.route('/video_feed/<path:backgound>')
-def video_feed(backgound):
+@app.route('/video_feed/<path:background>')
+def video_feed(background):
     """
     Stream video feed from the camera and optionaly add a background on image.
 
@@ -187,13 +187,16 @@ def video_feed(backgound):
     # Restricted enpoint.
     check_ip_restrict(request.remote_addr)
 
+    # Check if green background is enabled.
+    green_background = str_to_bool(config.get('main', 'green_background'))
+
     # Stream video.
-    return Response(camera.generate_video(backgound),
+    return Response(camera.generate_video(background, green_background),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
-@app.route('/capture/<path:backgound>')
-def capture(backgound):
+@app.route('/capture/<path:background>')
+def capture(background):
     """
     Capture an image and save it with a timestamped filename.
 
@@ -215,7 +218,9 @@ def capture(backgound):
     filename = f"images/photo_{date}.png"
 
     # Capture image.
-    error = camera.capture_img(filename, backgound,
+    error = camera.capture_img(filename, background,
+                               str_to_bool(config.get('main', 'green_background')),
+                               str_to_bool(config.get('main', 'disable_ai_cut')),
                                str_to_bool(config.get('main', 'enable_date')),
                                str_to_bool(config.get('main', 'enable_time')),
                                config.get('main', 'message'),
@@ -343,8 +348,8 @@ def serve_images(filename):
     return send_from_directory('images', filename)
 
 
-@app.route('/background/<path:backgound>')
-def serve_background(backgound):
+@app.route('/background/<path:background>')
+def serve_background(background):
     """
     Serve background images files from the 'background' directory.
 
@@ -364,7 +369,7 @@ def serve_background(backgound):
     backgrounds_dir = 'backgrounds'
 
     # Get background item list.
-    if backgound == 'list':
+    if background == 'list':
         try:
             files = os.listdir(backgrounds_dir)
             image_files = [file for file in files if file.lower().endswith(('.jpg', '.jpeg', '.png'))]
@@ -374,7 +379,7 @@ def serve_background(backgound):
     
     # Send background image.
     else:
-        return send_from_directory(backgrounds_dir, backgound)
+        return send_from_directory(backgrounds_dir, background)
 
 
 @app.route('/qrcode/<path:filename>')
@@ -502,10 +507,19 @@ def handle_settings():
     if request.method == 'PUT':
 
         # Get json body content.
+        green_background = request.json.get('green_background')
+        disable_ai_cut = request.json.get('disable_ai_cut')
         enable_date = request.json.get('enable_date')
         enable_time = request.json.get('enable_time')
         message = request.json.get('message')
 
+        if green_background != config.get('main', 'green_background'):
+            if isinstance(green_background, bool):
+                config.set('main', 'green_background', green_background)
+
+        if disable_ai_cut != config.get('main', 'disable_ai_cut'):
+            if isinstance(disable_ai_cut, bool):
+                config.set('main', 'disable_ai_cut', disable_ai_cut)
 
         if enable_date != config.get('main', 'enable_date'):
             if isinstance(enable_date, bool):
@@ -520,6 +534,8 @@ def handle_settings():
 
     # Get settings.
     settings = {
+        'green_background': config.get('main', 'green_background'),
+        'disable_ai_cut': config.get('main', 'disable_ai_cut'),
         'enable_date': config.get('main', 'enable_date'),
         'enable_time': config.get('main', 'enable_time'),
         'message': config.get('main', 'message'),
