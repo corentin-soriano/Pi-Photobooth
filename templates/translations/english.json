@@ -22,8 +22,9 @@
     "display_date_pictures": "Display date on photos",
     "display_time_pictures": "Display time on photos",
     "display_message_pictures": "Message to display on photos:",
+    "green_screen_background": "Do you have a green background?",
+    "ai_background_cut": "Disable AI background remove (rembg/u2net)",
 
     "_background": "Text displayed in backgrounds.",
-    "preserve_background": "Preserve Background",
-    "remove_background": "Remove Background"
+    "preserve_background": "Preserve Background"
 }

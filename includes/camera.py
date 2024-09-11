@@ -16,10 +16,12 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+import os
 from datetime import datetime
 from io import BytesIO
 from libcamera import Transform
 from picamera2 import Picamera2
+from time import sleep
 
 # Includes from this project.
 from includes.image import ImageProcessor
@@ -45,8 +47,8 @@ class Camera:
             preview_height (int): height (px) for preview image.
         """
 
-        # Init Picamera2 object.
-        self._picam2 = Picamera2()
+        # Init _picam2 as None.
+        self._picam2 = None
 
         # Init preview and capture configurations.
         self._configuration_preview = {"format": "RGB888",
@@ -64,6 +66,16 @@ class Camera:
                             False if switching to capture mode.
             reduce_size (bool): Request a lower size.
         """
+
+        if self._picam2 is None:
+            try:
+                # Init Picamera2 object.
+                self._picam2 = Picamera2()
+            except Exception as e:
+                # Log any other exceptions.
+                print(f"General error: {e}")
+                self._picam2 = None
+                return
 
         # Get attributes.
         picam2 = self._picam2
@@ -99,16 +111,26 @@ class Camera:
         Stop camera to avoid busy device.
         """
 
-        self._picam2.stop()
+        if self._picam2 is not None:
+            self._picam2.stop()
 
 
-    def generate_video(self, background):
+    def generate_video(self, background, green_background = False):
         """
         Generate video stream from camera.
 
         Args:
-            background (str):
+            background (str): Background requested.
+            green_background (bool, optional): Enable green background remove mode.
         """
+
+        # Wait for the camera to be ready.
+        while self._picam2 is None:
+            self.initialize_camera(True)
+
+            # short wait before retry.
+            if self._picam2 is None:
+                sleep(1)
 
         # Get attributes.
         picam2 = self._picam2
@@ -125,7 +147,7 @@ class Camera:
                 processor = ImageProcessor(stream)
 
                 # Send background instructions.
-                processor.background(background, False)
+                processor.background(background, True, True, green_background)
 
                 # Commit all pending operations.
                 processor.commit()
@@ -135,13 +157,15 @@ class Camera:
                   b'Content-Type: image/jpeg\r\n\r\n' + stream.read() + b'\r\n')
 
 
-    def capture_img(self, filename, background, add_date, add_time, add_text, font = ''):
+    def capture_img(self, filename, background, green_background, disable_ai_cut, add_date, add_time, add_text, font = ''):
         """
         Capture image in full resolution from camera.
 
         Args:
             filename (str): Name of image file to save.
             background (str): Name of background image file.
+            green_background (bool): Using green screen background.
+            disable_ai_cut (bool): Disable background cut by AI.
             add_date (bool): Write current date on captured image.
             add_time (bool): Write current time on captured image.
             add_text (string): Write text message on captured image.
@@ -179,7 +203,7 @@ class Camera:
                 # Add background on image.
                 if background != 'nobackground':
                     # Send background instructions.
-                    processor.background(background)
+                    processor.background(background, green_background = green_background, disable_ai_cut = disable_ai_cut)
 
                 # Add text on image.
                 if add_text != '':
@@ -213,6 +237,11 @@ class Camera:
                     text_position = (30, 70)
                     time = datetime.now().strftime("%H:%M:%S     ")
                     processor.add_text(time, text_position, 'top_right')
+
+                # Save original image to disk:
+                file_basename, file_ext = os.path.splitext(filename)
+                with open(f"{file_basename}_orig{file_ext}", 'wb') as f:
+                    f.write(stream.getvalue())
 
                 # Commit all pending operations.
                 processor.commit()

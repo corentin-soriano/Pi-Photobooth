@@ -39,6 +39,14 @@
       <div id="reboot" class="power">{{ lang.get('reboot') }}</div>
       <div id="settings">
         <label>
+          {{ lang.get('green_screen_background') }}
+          <input id="setting-green-background" type="checkbox" />
+        </label><br/>
+        <label>
+          {{ lang.get('ai_background_cut') }}
+          <input id="setting-ai-background" type="checkbox" />
+        </label><br/>
+        <label>
           {{ lang.get('display_date_pictures') }}
           <input id="setting-display-date" type="checkbox" />
         </label><br/>
@@ -88,7 +96,7 @@
 
     <div id="main-container">
       <div id="preview-container"><!-- Container for displaying camera preview. -->
-        <img id="preview-img" src="{{ url_for('video_feed', backgound='nobackground') }}" />
+        <img id="preview-img" src="{{ url_for('video_feed', background='nobackground') }}" />
         <br/>
         <div id="captureImage" class="button">{{ lang.get('take_picture') }}</div>
       </div><!-- #preview-container --><!-- 
@@ -97,7 +105,6 @@
    --><div id="background-container"><!-- Container for displaying backgrounds. -->
         <ul id="background-list">
           <li class="background-item selected" data-background="nobackground"><p>{{ lang.get('preserve_background') }}</p></li>
-          <li class="background-item" data-background="removebackground"><p>{{ lang.get('remove_background') }}</p></li>
         </ul>
       </div><!-- #background-container -->
     </div><!-- #main-container -->

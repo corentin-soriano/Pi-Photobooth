@@ -50,28 +50,26 @@ h1 {
  */
 
 .background-item {
-    height: 100px;
-    margin-right: 5px;
-    padding: 10px 0;
+    align-items: center;
+    display: flex;
+    flex: 0 0 46%;
+    height: 80px;
+    justify-content: center;
+    margin-right: 2%;
+    padding: 10px 2px;
     text-align: center;
-    width: 100%;
+    word-wrap: break-word;
+
 }
 
 .background-item.selected {
     background-color: rgb(199, 199, 199);
-    /*border: 1px solid #999;*/
     border-radius: 5px;
 }
 
 .background-item img {
     max-height: 100%;
     max-width: 100%;
-}
-
-.background-item p {
-    margin: 0;
-    line-height: 100px;
-    padding: 0;
 }
 
 /* Button capture */
@@ -162,6 +160,8 @@ h1 {
 }
 
 #background-list {
+    display: flex;
+    flex-wrap: wrap;
     list-style: none;
     margin: 0;
     padding: 0;

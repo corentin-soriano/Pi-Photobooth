@@ -17,7 +17,7 @@
 
 [Unit]
 Description=Photobooth server
-After=network.target
+After=network.target multi-user.target
 
 [Service]
 ExecStart=/opt/Pi-Photobooth/main.py

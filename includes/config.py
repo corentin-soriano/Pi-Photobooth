@@ -17,6 +17,7 @@
 #
 
 import configparser
+from time import sleep
 
 
 class ConfigFile:
@@ -45,7 +46,7 @@ class ConfigFile:
         self._config = configparser.RawConfigParser()
 
 
-    def get(self, section, key):
+    def get(self, section, key, max_retries=5):
         """
         Get value from config file.
 
@@ -57,10 +58,23 @@ class ConfigFile:
             str: value of requested key.
         """
 
-        # Read ini file.
+        # Read ini file on disk.
         self._config.read(self._filename)
 
-        return self._config.get(section, key, fallback=None)
+        # Read requested key on file.
+        value = self._config.get(section, key, fallback='')
+
+        # Retry if read error.
+        if not isinstance(value, str) and max_retries > 0:
+            print(f"Error reading {key} (remaining tries: {max_retries})...")
+            sleep(0.25)
+            value = self.get(section, key, max_retries-1)
+        
+        if not isinstance(value, str) and max_retries == 0:
+            print(f"Error reading {key}, set default value = '' (empty str).")
+            value = ''
+
+        return value
 
 
     def set(self, section, key, value):

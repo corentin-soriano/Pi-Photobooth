@@ -17,12 +17,11 @@
 #
 
 import cv2
-import numpy
+import numpy as np
+import os
+import skimage.exposure
 from PIL import Image, ImageDraw, ImageFont
 from rembg import remove, new_session
-
-# DEBUG :
-from datetime import datetime
 
 
 class ImageProcessor:
@@ -48,7 +47,8 @@ class ImageProcessor:
 
 
     def add_text(self, text, offset, from_edge, font_size=50,
-                 font_familly='Quicksand-Medium.ttf', color=(255, 255, 255)):
+                 font_familly='Quicksand-Medium.ttf', color=(255, 255, 255),
+                 outline_color = (0,0,0), outline_width = 3):
         """
         Store requested text and parameters to write on commit.
 
@@ -59,6 +59,8 @@ class ImageProcessor:
             font_size (int, optional): Font size, default = 20px.
             font_familly (str, optional): Font familly used.
             color (tuple, optional): RGB color of the text. Default = white.
+            outline_color (tuple, optional): RGB color of text outline. Default = Black.
+            outline_width (int, optional): Width of outline text. Default = 3.
         """
 
         # Dict with requested parameters for this text.
@@ -70,30 +72,137 @@ class ImageProcessor:
             'font_size': font_size,
             'font_familly': font_familly,
             'color': color,
+            'outline_color': outline_color,
+            'outline_width': outline_width,
         }
 
         # Append params to pending operations.
         self._operations.append(text_params)
 
 
-    def background(self, name, capture = True):
+    def background(self, name, mirror = False, disable_ai_cut = False, green_background = False):
         """
         Store requested text and parameters to write on commit.
 
         Args:
-            text (str): Name of background file to use.
-            capture (bool, optional): Improve quality (capture) or speed (preview).
+            name (str): Name of background file to use.
+            mirror (bool, optional): Mirror picture.
+            disable_ai_cut (bool, optional): Use AI (rembg/u2net) to cut background.
+            green_background (bool, optional): True if using a green background.
         """
 
         # Dict with requested parameters for this text.
         background_params = {
             'type': 'background',
             'name': name,
-            'capture': capture,
+            'mirror': mirror,
+            'disable_ai_cut': disable_ai_cut,
+            'green_background': green_background,
         }
 
         # Append params to pending operations.
         self._operations.append(background_params)
+
+
+    def green_background_erase(self, img):
+        """
+        Removes the green background from an image and returns the image with
+        transparency where the green background was.
+
+        This function converts an image with a green background into an image with
+        a transparent background by identifying and masking out the green areas.
+
+        Args:
+            img (PIL.Image): The input image in PIL format. This image is expected
+                             to have a green background.
+
+        Returns:
+            PIL.Image: The output image with the green background removed and 
+                       replaced by transparency. The output image is in RGBA format.
+
+        """
+
+        # Convert PIL image to numpy array format compatible with OpenCV.
+        image_np = np.array(img)
+
+        # Convert to LAB color space.
+        lab = cv2.cvtColor(image_np,cv2.COLOR_BGR2LAB)
+
+        # Extract A channel (green-magenta component).
+        A = lab[:,:,1]
+
+        # Threshold A channel using Otsu's method.
+        thresh = cv2.threshold(A, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)[1]
+
+        # Stretch intensity so that 255 -> 255 and 127.5 -> 0.
+        mask = skimage.exposure.rescale_intensity(thresh, in_range=(127.5,255), out_range=(0,255)).astype(np.uint8)
+
+        i = 1
+        while (i <= 5):
+            # Define a mask for areas with significant green (where A is low)
+            # We'll consider areas where A < 128 to be potentially affected by green reflections
+            green_mask = (A < 110 / i).astype(np.uint8) * 255
+
+            # Apply a slight Gaussian blur to soften the edges of the mask
+            green_mask = cv2.GaussianBlur(green_mask, (5, 5), 0)
+
+            # Reduce the green in areas defined by the mask
+            # Here, we decrease the A values by a factor to introduce magenta only where green is strong
+            A = np.where(green_mask > 0, A + ((255 - A) * 0.1 * i), A)
+
+            # Make sure the values stay within valid range (0 to 255)
+            A = np.clip(A, 0, 255)
+
+            i += 1
+
+        # Replace the original A channel with the corrected one.
+        lab[:, :, 1] = A
+
+        # Convert back to BGR color space
+        result = cv2.cvtColor(lab, cv2.COLOR_LAB2BGR)
+
+        # Add mask to image as an alpha channel.
+        result = cv2.cvtColor(result, cv2.COLOR_BGR2BGRA)
+        result[:,:,3] = mask
+
+        # Convert back the resulting image to PIL format and return it.
+        return Image.fromarray(result)
+
+
+    def white_background_erase(self, img):
+        """
+        Removes the white background from an image and returns the image with
+        transparency where the white background was.
+
+        This function converts an image with a white background into an image with
+        a transparent background by identifying and masking out the white areas.
+
+        Args:
+            img (PIL.Image): The input image in PIL format. This image is expected
+                             to have a white background.
+
+        Returns:
+            PIL.Image: The output image with the white background removed and 
+                       replaced by transparency. The output image is in RGBA format.
+        """
+
+        # Convert PIL image to numpy array format compatible with OpenCV.
+        image_np = np.array(img)
+
+        # Convert to grayscale image.
+        gray = cv2.cvtColor(image_np, cv2.COLOR_RGB2GRAY)
+
+        # Apply a thresholding method to create a mask.
+        _, mask = cv2.threshold(gray, 180, 255, cv2.THRESH_BINARY)
+
+        # Reverse Mask to remove white pixels.
+        mask = 255 - mask
+
+        # Apply mask to original image.
+        result = cv2.bitwise_and(image_np, image_np, mask=mask)
+
+        # Convert back the resulting image to PIL format and return it.
+        return Image.fromarray(result)
 
 
     def commit(self):
@@ -116,37 +225,27 @@ class ImageProcessor:
         background = next((op for op in operations if op.get('type') == 'background'), None)
         if background:
 
-            # Remove old background with good quality (spend much time).
-            if background['capture']:
+            # Remove old background with AI (spend much time).
+            if not background['disable_ai_cut']:
 
                 # u2netp 1s, u2net =  2.5s
-                model_name = "u2netp"
+                model_name = "u2net"
                 rembg_session = new_session(model_name)
                 img = remove(img, session=rembg_session)
 
-            # Remove old background with less quality (faster).
+            # Remove old background with opencv2 (faster).
             else:
 
-                # Convert PIL image to numpy array format compatible with OpenCV.
-                image_np = numpy.array(img)
+                # Green background (better).
+                if background['green_background']:
+                    img = self.green_background_erase(img)
 
-                # Convert to grayscale image.
-                gray = cv2.cvtColor(image_np, cv2.COLOR_RGB2GRAY)
+                # White background.
+                else:
+                    img = self.white_background_erase(img)
 
-                # Apply a thresholding method to create a mask.
-                _, mask = cv2.threshold(gray, 180, 255, cv2.THRESH_BINARY)
-
-                # Reverse Mask to remove white pixels.
-                mask = 255 - mask
-
-                # Apply mask to original image.
-                result = cv2.bitwise_and(image_np, image_np, mask=mask)
-
-                # Convert back the resulting image to PIL format.
-                img = Image.fromarray(result)
-
-            # Specific case 'removebackground' => just remove background.
-            if background['name'] != 'removebackground':
+            # Check if requested background exists.
+            if os.path.exists('backgrounds/' + background['name']):
 
                 # Open background image.
                 bg_img = Image.open('backgrounds/' + background['name']).convert("RGBA")
@@ -156,7 +255,7 @@ class ImageProcessor:
                     bg_img = bg_img.resize(img.size)
 
                 # Mirror background.
-                if not background['capture']:
+                if background['mirror']:
                     bg_img = bg_img.transpose(Image.FLIP_LEFT_RIGHT)
 
                 # Combine main image and background.
@@ -189,10 +288,30 @@ class ImageProcessor:
             }
 
             # Position to write.
-            final_position = positions[params['from_edge']]
-            
+            x, y = positions[params['from_edge']]
+
+            # Draw text outline with position adjustment.
+            for adj in range(-params['outline_width'], params['outline_width'] + 1):
+
+                # Draws the text slightly shifted to the right. 
+                draw.text((x + adj, y), params['text'], font=font_param, fill=params['outline_color'])
+                # Draws the text slightly shifted to the left. 
+                draw.text((x - adj, y), params['text'], font=font_param, fill=params['outline_color'])
+                # Draws the text slightly shifted to the bottom. 
+                draw.text((x, y + adj), params['text'], font=font_param, fill=params['outline_color'])
+                # Draws the text slightly shifted to the top. 
+                draw.text((x, y - adj), params['text'], font=font_param, fill=params['outline_color'])
+                # Draws the text slightly shifted to the right and bottom. 
+                draw.text((x + adj, y + adj), params['text'], font=font_param, fill=params['outline_color'])
+                # Draws the text slightly shifted to the left and top. 
+                draw.text((x - adj, y - adj), params['text'], font=font_param, fill=params['outline_color'])
+                # Draws the text slightly shifted to the right and top. 
+                draw.text((x + adj, y - adj), params['text'], font=font_param, fill=params['outline_color'])
+                # Draws the text slightly shifted to the left and bottom. 
+                draw.text((x - adj, y + adj), params['text'], font=font_param, fill=params['outline_color'])
+
             # Add Text to an image
-            draw.text(final_position, params['text'], font=font_param, fill=params['color'])
+            draw.text((x, y), params['text'], font=font_param, fill=params['color'])
 
         # Save the edited image
         self._image.seek(0)

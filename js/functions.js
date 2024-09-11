@@ -342,10 +342,14 @@ function send_print() {
 function refreshSettingsForm(settings) {
 
     /* Convert python bool to js bool */
+    green_background = settings.green_background.toLowerCase() === 'true';
+    disable_ai_cut = settings.disable_ai_cut.toLowerCase() === 'true';
     enable_date = settings.enable_date.toLowerCase() === 'true';
     enable_time = settings.enable_time.toLowerCase() === 'true';
 
     /* Update form data */
+    $('#setting-green-background').prop('checked', green_background);
+    $('#setting-ai-background').prop('checked', disable_ai_cut);
     $('#setting-display-date').prop('checked', enable_date);
     $('#setting-display-time').prop('checked', enable_time);
     $('#setting-display-message').val(settings.message);
@@ -378,6 +382,9 @@ function sendSettings() {
 
     /* Get form data */
     let data = {
+        green_background: $('#setting-green-background').is(':checked'),
+        disable_ai_cut: $('#setting-ai-background').is(':checked'),
+        enable_date: $('#setting-display-date').is(':checked'),
         enable_date: $('#setting-display-date').is(':checked'),
         enable_time: $('#setting-display-time').is(':checked'),
         message: $('#setting-display-message').val(),
