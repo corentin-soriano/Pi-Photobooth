@@ -17,14 +17,11 @@
 #
 
 import cv2
-import numpy
+import numpy as np
 import os
 import skimage.exposure
 from PIL import Image, ImageDraw, ImageFont
 from rembg import remove, new_session
-
-# DEBUG :
-from datetime import datetime
 
 
 class ImageProcessor:
@@ -126,26 +123,46 @@ class ImageProcessor:
         """
 
         # Convert PIL image to numpy array format compatible with OpenCV.
-        image_np = numpy.array(img)
+        image_np = np.array(img)
 
-        # convert to LAB
+        # Convert to LAB color space.
         lab = cv2.cvtColor(image_np,cv2.COLOR_BGR2LAB)
 
-        # extract A channel
+        # Extract A channel (green-magenta component).
         A = lab[:,:,1]
 
-        # threshold A channel
+        # Threshold A channel using Otsu's method.
         thresh = cv2.threshold(A, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)[1]
 
-        # blur threshold image
-        blur = cv2.GaussianBlur(thresh, (0,0), sigmaX=1, sigmaY=1, borderType = cv2.BORDER_DEFAULT)
+        # Stretch intensity so that 255 -> 255 and 127.5 -> 0.
+        mask = skimage.exposure.rescale_intensity(thresh, in_range=(127.5,255), out_range=(0,255)).astype(np.uint8)
 
-        # stretch so that 255 -> 255 and 127.5 -> 0
-        mask = skimage.exposure.rescale_intensity(blur, in_range=(200,255), out_range=(0,255)).astype(numpy.uint8)
+        i = 1
+        while (i <= 5):
+            # Define a mask for areas with significant green (where A is low)
+            # We'll consider areas where A < 128 to be potentially affected by green reflections
+            green_mask = (A < 110 / i).astype(np.uint8) * 255
 
-        # add mask to image as alpha channel
-        result = image_np.copy()
-        result = cv2.cvtColor(image_np, cv2.COLOR_BGR2BGRA)
+            # Apply a slight Gaussian blur to soften the edges of the mask
+            green_mask = cv2.GaussianBlur(green_mask, (5, 5), 0)
+
+            # Reduce the green in areas defined by the mask
+            # Here, we decrease the A values by a factor to introduce magenta only where green is strong
+            A = np.where(green_mask > 0, A + ((255 - A) * 0.1 * i), A)
+
+            # Make sure the values stay within valid range (0 to 255)
+            A = np.clip(A, 0, 255)
+
+            i += 1
+
+        # Replace the original A channel with the corrected one.
+        lab[:, :, 1] = A
+
+        # Convert back to BGR color space
+        result = cv2.cvtColor(lab, cv2.COLOR_LAB2BGR)
+
+        # Add mask to image as an alpha channel.
+        result = cv2.cvtColor(result, cv2.COLOR_BGR2BGRA)
         result[:,:,3] = mask
 
         # Convert back the resulting image to PIL format and return it.
@@ -170,7 +187,7 @@ class ImageProcessor:
         """
 
         # Convert PIL image to numpy array format compatible with OpenCV.
-        image_np = numpy.array(img)
+        image_np = np.array(img)
 
         # Convert to grayscale image.
         gray = cv2.cvtColor(image_np, cv2.COLOR_RGB2GRAY)
