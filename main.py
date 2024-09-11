@@ -233,6 +233,11 @@ def capture(background):
     # Backup picture to WebDAV server (async job).
     if webdav:
         webdav.add_operation('push', filename)
+        # Backup original picture if exists.
+        file_basename, file_ext = os.path.splitext(filename)
+        orig_filename = f"{file_basename}_orig{file_ext}"
+        if os.path.exists(orig_filename):
+            webdav.add_operation('push', orig_filename)
 
     # Send filename to frontend.
     return filename

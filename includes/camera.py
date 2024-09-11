@@ -16,6 +16,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+import os
 from datetime import datetime
 from io import BytesIO
 from libcamera import Transform
@@ -236,6 +237,11 @@ class Camera:
                     text_position = (30, 70)
                     time = datetime.now().strftime("%H:%M:%S     ")
                     processor.add_text(time, text_position, 'top_right')
+
+                # Save original image to disk:
+                file_basename, file_ext = os.path.splitext(filename)
+                with open(f"{file_basename}_orig{file_ext}", 'wb') as f:
+                    f.write(stream.getvalue())
 
                 # Commit all pending operations.
                 processor.commit()
