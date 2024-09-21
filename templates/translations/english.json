@@ -10,6 +10,9 @@
     "poweroff": "Power Off",
     "reboot": "Reboot",
     "refresh": "Refresh",
+    "printer_unavailable": "Printer offline",
+    "printer_empty_media": "Empty paper (<span id=\"printer-media-state\">0</span>%)",
+    "printer_low_media": "Low paper (<span id=\"printer-media-state\">0</span>%)",
 
     "_overlay": "Text displayed in overlays.",
     "your_picture": "Your picture",

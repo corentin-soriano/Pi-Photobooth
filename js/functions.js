@@ -189,7 +189,41 @@ function checkGPIOAdmin() {
 }
 
 /**
- * Check if RPI is not overheating and block access if necessary.
+ * Handle printer and media state.
+ * 
+ * @param {string} printer printer json state.
+ */
+function handlePrinterState(printer) {
+console.log(printer.available);
+
+    /* Printer offline */
+    if (!printer.available) {
+        $('#printer-warn').removeClass('bg-red').addClass('bg-orange');
+        $('#printer-warn').html(lang.printer_unavailable);
+        $('#printer-warn').show();
+
+    /* Empty paper */
+    } else if (printer.paper_amount < 5) {
+        $('#printer-warn').removeClass('bg-orange').addClass('bg-red');
+        $('#printer-warn').html(lang.printer_empty_media);
+        $('#printer-media-state').html(printer.paper_amount);
+        $('#printer-warn').show();
+
+    /* Low paper */
+    } else if (printer.paper_amount < 20) {
+        $('#printer-warn').removeClass('bg-red').addClass('bg-orange');
+        $('#printer-warn').html(lang.printer_low_media);
+        $('#printer-media-state').html(printer.paper_amount);
+        $('#printer-warn').show();
+
+    /* Printer available */
+    } else {
+        $('#printer-warn').hide();
+    }
+}
+
+/**
+ * Check system health state (temperature, printer, media).
 */
 function checkSystemHealth() {
 
@@ -198,6 +232,9 @@ function checkSystemHealth() {
         url: '/health',
         method: 'GET',
         success: function(response) {
+
+            /* Handle printer state */
+            handlePrinterState(response.printer);
 
             /**
              * Handle CPU temperature.
