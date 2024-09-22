@@ -17,6 +17,8 @@
 #
 
 import cups
+import re
+import requests
 import os
 from PIL import Image
 
@@ -190,19 +192,50 @@ class Printer:
             bool: json with printer and paper state.
         """
 
-        # Default = don't need paper.
-        need_paper = False
+        # Default values.
+        printer_available = self._printer is not None
+        paper_amount = 100
 
-        # Check only if printer available.
-        if self._printer:
-            reasons = self._printer.getPrinters()[self._printer_name]['printer-state-reasons']
+        # Check according on printer model.
+        if printer_available and 'vc-500w' in self._printer_name.lower():
 
-            # Need add paper.
-            if 'media-empty' in reasons or 'media-needed' in reasons:
-                need_paper = True
+            try:
+                # Call webservice supply info to get media supply.
+                response = requests.get('http://vc-500w.host/cgi-bin/getdata?supplyInfo', timeout=2)
+
+            except Exception:
+                # Printer unavailable.
+                printer_available = False
+
+            # Printer available.
+            if printer_available and response.status_code == 200:
+
+                # Get supply length and remaining.
+                supply_remaining_match = re.search(
+                    r'var\s+supplyRemaining\s*=\s*"(\d+(?:\.\d+){0,1})";',
+                    response.text
+                )
+                supply_length_match = re.search(
+                    r'var\s+supplyLength\s*=\s*"(\d+(?:\.\d+){0,1})";',
+                    response.text
+                )
+
+                # Calculate the remaining percentage.
+                if supply_remaining_match and supply_length_match:
+                    supply_remaining = float(supply_remaining_match.group(1))
+                    supply_length = float(supply_length_match.group(1))
+                    paper_amount = int(round((supply_remaining / supply_length) * 100))
+
+                # Missing supply length or remaining.
+                else:
+                    paper_amount = 0
+
+            # Other http code = printer unavailable.
+            else:
+                printer_available = False
 
         return {
-            "available": self._printer is not None,
-            "need_paper": need_paper,
+            "available": printer_available,
+            "paper_amount": paper_amount,
         }
 

@@ -10,6 +10,9 @@
     "poweroff": "Éteindre",
     "reboot": "Redémarrer",
     "refresh": "Rafraîchir",
+    "printer_unavailable": "Imprimante hors ligne",
+    "printer_empty_media": "Plus de papier  (<span id=\"printer-media-state\">0</span>%)",
+    "printer_low_media": "Réserve papier faible (<span id=\"printer-media-state\">0</span>%)",
 
     "_overlay": "Texte affiché dans les overlays.",
     "your_picture": "Votre photo",
@@ -22,8 +25,12 @@
     "display_date_pictures": "Afficher la date sur les photos",
     "display_time_pictures": "Afficher l'heure sur les photos",
     "display_message_pictures": "Message à afficher sur les photos :",
+    "enable_background": "Activer les arrière-plans personnalisés",
     "green_screen_background": "Avez-vous un fond vert ?",
     "ai_background_cut": "Désactiver la découpe d'arrière-plan par IA (rembg/u2net)",
+    "enable_qrcodes": "Activer la génération de QRcodes",
+    "counter_pictures": "Nombre de photos :",
+    "counter_prints": "Nombre d'impressions :",
 
     "_background": "Texte affiché dans arrières-plans.",
     "preserve_background": "Ne pas modifier l'arrière plan"

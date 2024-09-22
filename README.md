@@ -1,3 +1,29 @@
+# Features
+- Full touchscreen controls (except the button which enables "admin mode").
+- Print as many times as you want.
+- Automatic save to webdav server.
+- QRCode generation to download pictures.
+- Background replacement (better with green screen background).
+- Optionally add custom text and date/time on pictures.
+- English and French translations.
+- All time counters for pictures and prints.
+
+# UI preview
+Preview page:  
+<img src="screenshots/01_preview_page.png" alt="Preview page" style="width: 50%;" />
+
+Preview page with custom background:  
+<img src="screenshots/02_preview_page_bg_replace.png" alt="Preview custom background" style="width: 50%;" />
+
+Picture review with date/time and custom message:  
+<img src="screenshots/03_picture_review.png" alt="Picture review" style="width: 50%;" />
+
+Picture review with unavailable printer:  
+<img src="screenshots/04_picture_review_printer_unavailable.png" alt="Picture review with unavailable printer" style="width: 50%;" />
+
+Settings (admin mode):  
+<img src="screenshots/05_settings.png" alt="Settings" style="width: 50%;" />
+
 # Installation guide
 
 Using this image : Raspberry Pi OS with desktop (64-bit).  
@@ -31,7 +57,7 @@ raspi-config
 apt install python3-flask python3-picamera2 python3-qrcode python3-easywebdav git ncat
 
 # Not available from apt:
-pip3 install rembg pydavsync --break-system-packages
+pip3 install rembg --break-system-packages
 ```
 
 ## Clone this repository in /opt:

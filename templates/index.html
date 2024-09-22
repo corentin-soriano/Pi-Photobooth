@@ -31,6 +31,7 @@
   <body>
     <h1>{{ lang.get('photobooth') }}</h1>
 
+    <div id="printer-warn" class="bg-red">{{ lang.get('printer_unavailable') }}</div>
     <div id="refresh">{{ lang.get('refresh') }}</div>
     <div id="settings-open"></div>
     <div id="settings-overlay" class="fullscreen-overlay"><!-- Overlay for countdown display -->
@@ -38,6 +39,10 @@
       <div id="shutdown" class="power">{{ lang.get('poweroff') }}</div>
       <div id="reboot" class="power">{{ lang.get('reboot') }}</div>
       <div id="settings">
+        <label>
+          {{ lang.get('enable_background') }}
+          <input id="setting-enable-background" type="checkbox" />
+        </label><br/>
         <label>
           {{ lang.get('green_screen_background') }}
           <input id="setting-green-background" type="checkbox" />
@@ -57,8 +62,13 @@
         <label>
           {{ lang.get('display_message_pictures') }}
           <input id="setting-display-message" type="text" >
+        </label><br/>
+        <label>
+          {{ lang.get('enable_qrcodes') }}
+          <input id="setting-enable-qrcodes" type="checkbox" />
         </label>
       </div><!-- #settings -->
+      <span id="counters">{{ lang.get('counter_pictures') }} <span class="pictures">0</span> | {{ lang.get('counter_prints') }} <span class="prints">0</span></span>
     </div><!-- #settings-overlay -->
 
     <div id="temperature-overlay" class="fullscreen-overlay"><!-- Overlay for countdown display -->

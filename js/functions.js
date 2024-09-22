@@ -65,7 +65,11 @@ function switchOverlays(message, img_path) {
         $('#review-message').hide();
         $('#review').show();
         $('#review #photo img').attr('src', img_path);
-        $('#review #qrcode img').attr('src', 'qrcode/' + img_path.split('/').pop());
+
+        /* Get qrcode only if feature is enabled. */
+        if ($('#review #qrcode').is(':visible')) {
+            $('#review #qrcode img').attr('src', 'qrcode/' + img_path.split('/').pop());
+        }
     } else {
         $('#review-message').show();
         $('#review').hide();
@@ -189,7 +193,44 @@ function checkGPIOAdmin() {
 }
 
 /**
- * Check if RPI is not overheating and block access if necessary.
+ * Handle printer and media state.
+ * 
+ * @param {string} printer printer json state.
+ */
+function handlePrinterState(printer) {
+
+    /* Printer offline */
+    if (!printer.available) {
+        $('#printer-warn').removeClass('bg-orange').addClass('bg-red');
+        $('#printer-warn').html(lang.printer_unavailable);
+        $('#printer-warn').show();
+        $('#review #print').hide();
+
+    /* Empty paper */
+    } else if (printer.paper_amount < 1) {
+        $('#printer-warn').removeClass('bg-orange').addClass('bg-red');
+        $('#printer-warn').html(lang.printer_empty_media);
+        $('#printer-media-state').html(printer.paper_amount);
+        $('#printer-warn').show();
+        $('#review #print').hide();
+
+    /* Low paper */
+    } else if (printer.paper_amount < 20) {
+        $('#printer-warn').removeClass('bg-red').addClass('bg-orange');
+        $('#printer-warn').html(lang.printer_low_media);
+        $('#printer-media-state').html(printer.paper_amount);
+        $('#printer-warn').show();
+        $('#review #print').show();
+
+    /* Printer available */
+    } else {
+        $('#printer-warn').hide();
+        $('#review #print').show();
+    }
+}
+
+/**
+ * Check system health state (temperature, printer, media).
 */
 function checkSystemHealth() {
 
@@ -198,6 +239,9 @@ function checkSystemHealth() {
         url: '/health',
         method: 'GET',
         success: function(response) {
+
+            /* Handle printer state */
+            handlePrinterState(response.printer);
 
             /**
              * Handle CPU temperature.
@@ -342,17 +386,41 @@ function send_print() {
 function refreshSettingsForm(settings) {
 
     /* Convert python bool to js bool */
-    green_background = settings.green_background.toLowerCase() === 'true';
-    disable_ai_cut = settings.disable_ai_cut.toLowerCase() === 'true';
-    enable_date = settings.enable_date.toLowerCase() === 'true';
-    enable_time = settings.enable_time.toLowerCase() === 'true';
+    let green_background = settings.green_background.toLowerCase() === 'true';
+    let disable_ai_cut = settings.disable_ai_cut.toLowerCase() === 'true';
+    let enable_date = settings.enable_date.toLowerCase() === 'true';
+    let enable_time = settings.enable_time.toLowerCase() === 'true';
+    let bg_enabled = settings.bg_enabled.toLowerCase() === 'true';
+    let qrcode_enabled = settings.qrcode_enabled.toLowerCase() === 'true';
 
     /* Update form data */
+    $('#setting-enable-background').prop('checked', bg_enabled);
     $('#setting-green-background').prop('checked', green_background);
     $('#setting-ai-background').prop('checked', disable_ai_cut);
     $('#setting-display-date').prop('checked', enable_date);
     $('#setting-display-time').prop('checked', enable_time);
     $('#setting-display-message').val(settings.message);
+    $('#setting-enable-qrcodes').prop('checked', qrcode_enabled);
+    $('#counters .pictures').text(settings.counter_pictures);
+    $('#counters .prints').text(settings.counter_prints);
+
+    /* Enable/disable background replacement */
+    if (bg_enabled) {
+        $('#background-container').show();
+    } else {
+        $('#background-container').hide();
+
+        /* Force no background replacement in current video feed. */
+        $('#preview-img').attr('src', '/video_feed/nobackground');
+    }
+
+    /* Enable/disable qrcode generation */
+    if (qrcode_enabled) {
+        $('#review #qrcode').show();
+    } else {
+        $('#review #qrcode').hide();
+        $('#review #qrcode img').attr('src', '');
+    }
 }
 
 /**
@@ -382,12 +450,14 @@ function sendSettings() {
 
     /* Get form data */
     let data = {
+        bg_enabled: $('#setting-enable-background').is(':checked'),
         green_background: $('#setting-green-background').is(':checked'),
         disable_ai_cut: $('#setting-ai-background').is(':checked'),
         enable_date: $('#setting-display-date').is(':checked'),
         enable_date: $('#setting-display-date').is(':checked'),
         enable_time: $('#setting-display-time').is(':checked'),
         message: $('#setting-display-message').val(),
+        qrcode_enabled: $('#setting-enable-qrcodes').is(':checked'),
     };
 
     /* Send form data */

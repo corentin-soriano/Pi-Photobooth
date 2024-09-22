@@ -37,6 +37,17 @@
 }
 
 /**
+ * Generic classes.
+ */
+.bg-orange {
+    background-color: rgb(255, 123, 0);
+}
+
+.bg-red {
+    background-color: red;
+}
+
+/**
  * Elements by name.
  */
 
@@ -123,6 +134,7 @@ h1 {
     height: 100%;
     left: 0;
     position: fixed;
+    scrollbar-color: #1a1a1a #2b2b2b;
     top: 0;
     width: 100%;
     z-index: 1000;
@@ -181,6 +193,7 @@ h1 {
 #main-container {
     display: flex;
     align-items: stretch;
+    justify-content: center;
     max-height: 400px;
 }
 
@@ -204,6 +217,30 @@ h1 {
     width: 50px;
 }
 
+#printer-warn {
+    border: 1px solid grey;
+    border-radius: 5px;
+    color: white;
+    display: flex;
+    font-weight: 600;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 8px;
+    position: fixed;
+    top: 10px; left: 10px;
+    z-index: 2000;
+}
+
+#printer-warn::before {
+    background-image: url("openmoji-printer.svg");
+    background-size: cover;
+    border-radius: 5px;
+    content: '';
+    display: inline-block;
+    margin-right: 5px;
+    width: 30px; height: 30px;
+}
+
 /* Review photo after capture */
 #review-message {
     font-size: 3em;
@@ -212,6 +249,7 @@ h1 {
 
 #review {
     padding: 2%;
+    text-align: center;
     width: 100%;
 }
 
@@ -291,7 +329,14 @@ h1 {
     width: 30px; height: 30px;
 }
 
+#settings-overlay #counters {
+    position: fixed;
+    bottom: 5px;
+}
+
 #settings {
+    max-height: 80%;
+    overflow: auto;
     position: relative;
     width: 60%;
 }
