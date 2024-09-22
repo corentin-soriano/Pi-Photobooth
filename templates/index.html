@@ -40,6 +40,10 @@
       <div id="reboot" class="power">{{ lang.get('reboot') }}</div>
       <div id="settings">
         <label>
+          {{ lang.get('enable_background') }}
+          <input id="setting-enable-background" type="checkbox" />
+        </label><br/>
+        <label>
           {{ lang.get('green_screen_background') }}
           <input id="setting-green-background" type="checkbox" />
         </label><br/>
@@ -58,6 +62,10 @@
         <label>
           {{ lang.get('display_message_pictures') }}
           <input id="setting-display-message" type="text" >
+        </label><br/>
+        <label>
+          {{ lang.get('enable_qrcodes') }}
+          <input id="setting-enable-qrcodes" type="checkbox" />
         </label>
       </div><!-- #settings -->
     </div><!-- #settings-overlay -->

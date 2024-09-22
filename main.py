@@ -188,7 +188,7 @@ def video_feed(background):
     check_ip_restrict(request.remote_addr)
 
     # Check if green background is enabled.
-    green_background = str_to_bool(config.get('main', 'green_background'))
+    green_background = str_to_bool(config.get('background', 'green_background'))
 
     # Stream video.
     return Response(camera.generate_video(background, green_background),
@@ -219,8 +219,8 @@ def capture(background):
 
     # Capture image.
     error = camera.capture_img(filename, background,
-                               str_to_bool(config.get('main', 'green_background')),
-                               str_to_bool(config.get('main', 'disable_ai_cut')),
+                               str_to_bool(config.get('background', 'green_background')),
+                               str_to_bool(config.get('background', 'disable_ai_cut')),
                                str_to_bool(config.get('main', 'enable_date')),
                                str_to_bool(config.get('main', 'enable_time')),
                                config.get('main', 'message'),
@@ -407,8 +407,8 @@ def serve_qrcode(filename):
     check_ip_restrict(request.remote_addr)
 
     # Get full image url.
-    platform_url = config.get('main', 'public_url')
-    full_url = platform_url + filename
+    public_url = config.get('qrcode', 'public_url')
+    full_url = public_url + filename
 
     # Generate and send qrcode.
     return send_file(generate_qrcode(full_url), mimetype='image/png')
@@ -513,19 +513,13 @@ def handle_settings():
     if request.method == 'PUT':
 
         # Get json body content.
-        green_background = request.json.get('green_background')
-        disable_ai_cut = request.json.get('disable_ai_cut')
         enable_date = request.json.get('enable_date')
         enable_time = request.json.get('enable_time')
         message = request.json.get('message')
-
-        if green_background != config.get('main', 'green_background'):
-            if isinstance(green_background, bool):
-                config.set('main', 'green_background', green_background)
-
-        if disable_ai_cut != config.get('main', 'disable_ai_cut'):
-            if isinstance(disable_ai_cut, bool):
-                config.set('main', 'disable_ai_cut', disable_ai_cut)
+        bg_enabled = request.json.get('bg_enabled')
+        green_background = request.json.get('green_background')
+        disable_ai_cut = request.json.get('disable_ai_cut')
+        qrcode_enabled = request.json.get('qrcode_enabled')
 
         if enable_date != config.get('main', 'enable_date'):
             if isinstance(enable_date, bool):
@@ -538,13 +532,31 @@ def handle_settings():
         if message != config.get('main', 'message'):
             config.set('main', 'message', message)
 
+        if bg_enabled != config.get('background', 'enabled'):
+            if isinstance(bg_enabled, bool):
+                config.set('background', 'enabled', bg_enabled)
+
+        if green_background != config.get('background', 'green_background'):
+            if isinstance(green_background, bool):
+                config.set('background', 'green_background', green_background)
+
+        if disable_ai_cut != config.get('background', 'disable_ai_cut'):
+            if isinstance(disable_ai_cut, bool):
+                config.set('background', 'disable_ai_cut', disable_ai_cut)
+
+        if qrcode_enabled != config.get('qrcode', 'enabled'):
+            if isinstance(qrcode_enabled, bool):
+                config.set('qrcode', 'enabled', qrcode_enabled)
+
     # Get settings.
     settings = {
-        'green_background': config.get('main', 'green_background'),
-        'disable_ai_cut': config.get('main', 'disable_ai_cut'),
         'enable_date': config.get('main', 'enable_date'),
         'enable_time': config.get('main', 'enable_time'),
         'message': config.get('main', 'message'),
+        'qrcode_enabled': config.get('qrcode', 'enabled'),
+        'bg_enabled': config.get('background', 'enabled'),
+        'green_background': config.get('background', 'green_background'),
+        'disable_ai_cut': config.get('background', 'disable_ai_cut'),
     }
 
     # Send settings to client.

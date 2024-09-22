@@ -189,6 +189,7 @@ h1 {
 #main-container {
     display: flex;
     align-items: stretch;
+    justify-content: center;
     max-height: 400px;
 }
 
@@ -243,6 +244,7 @@ h1 {
 
 #review {
     padding: 2%;
+    text-align: center;
     width: 100%;
 }
 
