@@ -134,6 +134,7 @@ h1 {
     height: 100%;
     left: 0;
     position: fixed;
+    scrollbar-color: #1a1a1a #2b2b2b;
     top: 0;
     width: 100%;
     z-index: 1000;
@@ -328,7 +329,14 @@ h1 {
     width: 30px; height: 30px;
 }
 
+#settings-overlay #counters {
+    position: fixed;
+    bottom: 5px;
+}
+
 #settings {
+    max-height: 80%;
+    overflow: auto;
     position: relative;
     width: 60%;
 }

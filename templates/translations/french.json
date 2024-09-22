@@ -29,6 +29,8 @@
     "green_screen_background": "Avez-vous un fond vert ?",
     "ai_background_cut": "Désactiver la découpe d'arrière-plan par IA (rembg/u2net)",
     "enable_qrcodes": "Activer la génération de QRcodes",
+    "counter_pictures": "Nombre de photos :",
+    "counter_prints": "Nombre d'impressions :",
 
     "_background": "Texte affiché dans arrières-plans.",
     "preserve_background": "Ne pas modifier l'arrière plan"

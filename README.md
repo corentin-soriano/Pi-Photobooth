@@ -6,6 +6,7 @@
 - Background replacement (better with green screen background).
 - Optionally add custom text and date/time on pictures.
 - English and French translations.
+- All time counters for pictures and prints.
 
 # UI preview
 Coming soon...

@@ -401,6 +401,8 @@ function refreshSettingsForm(settings) {
     $('#setting-display-time').prop('checked', enable_time);
     $('#setting-display-message').val(settings.message);
     $('#setting-enable-qrcodes').prop('checked', qrcode_enabled);
+    $('#counters .pictures').text(settings.counter_pictures);
+    $('#counters .prints').text(settings.counter_prints);
 
     /* Enable/disable background replacement */
     if (bg_enabled) {

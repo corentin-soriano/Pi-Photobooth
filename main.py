@@ -239,6 +239,10 @@ def capture(background):
         if os.path.exists(orig_filename):
             webdav.add_operation('push', orig_filename)
 
+    # Increment pictures counter
+    counter_pictures = int(config.get('counter', 'pictures')) + 1
+    config.set('counter', 'pictures', counter_pictures)
+
     # Send filename to frontend.
     return filename
 
@@ -262,6 +266,10 @@ def print_file(action, job):
             "filename": job,
             "job_id": printer.print(job)
         }
+
+        # Increment prints counter
+        counter_prints = int(config.get('counter', 'prints')) + 1
+        config.set('counter', 'prints', counter_prints)
 
     # Monitoring pending job.
     elif action == 'monitoring':
@@ -557,6 +565,8 @@ def handle_settings():
         'bg_enabled': config.get('background', 'enabled'),
         'green_background': config.get('background', 'green_background'),
         'disable_ai_cut': config.get('background', 'disable_ai_cut'),
+        'counter_pictures': config.get('counter', 'pictures'),
+        'counter_prints': config.get('counter', 'prints'),
     }
 
     # Send settings to client.

@@ -29,6 +29,8 @@
     "green_screen_background": "Do you have a green background?",
     "ai_background_cut": "Disable AI background remove (rembg/u2net)",
     "enable_qrcodes": "Enable QRcodes generation",
+    "counter_pictures": "Number of pictures:",
+    "counter_prints": "Number of prints:",
 
     "_background": "Text displayed in backgrounds.",
     "preserve_background": "Preserve Background"
