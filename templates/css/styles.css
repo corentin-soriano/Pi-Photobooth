@@ -227,6 +227,7 @@ h1 {
     padding: 0 8px;
     position: fixed;
     top: 10px; left: 10px;
+    z-index: 2000;
 }
 
 #printer-warn::before {

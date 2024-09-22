@@ -201,16 +201,18 @@ function handlePrinterState(printer) {
 
     /* Printer offline */
     if (!printer.available) {
-        $('#printer-warn').removeClass('bg-red').addClass('bg-orange');
+        $('#printer-warn').removeClass('bg-orange').addClass('bg-red');
         $('#printer-warn').html(lang.printer_unavailable);
         $('#printer-warn').show();
+        $('#review #print').hide();
 
     /* Empty paper */
-    } else if (printer.paper_amount < 5) {
+    } else if (printer.paper_amount < 1) {
         $('#printer-warn').removeClass('bg-orange').addClass('bg-red');
         $('#printer-warn').html(lang.printer_empty_media);
         $('#printer-media-state').html(printer.paper_amount);
         $('#printer-warn').show();
+        $('#review #print').hide();
 
     /* Low paper */
     } else if (printer.paper_amount < 20) {
@@ -218,10 +220,12 @@ function handlePrinterState(printer) {
         $('#printer-warn').html(lang.printer_low_media);
         $('#printer-media-state').html(printer.paper_amount);
         $('#printer-warn').show();
+        $('#review #print').show();
 
     /* Printer available */
     } else {
         $('#printer-warn').hide();
+        $('#review #print').show();
     }
 }
 
