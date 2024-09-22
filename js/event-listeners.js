@@ -33,6 +33,11 @@ $(document).ready(function() {
     $('#temperature-close').hide();
     $('#print-close').hide();
 
+    /* Get settings, admin GPIO and system health on load */
+    getSettings();
+    checkGPIOAdmin();
+    checkSystemHealth();
+
     /* Get translations */
     translations()
         .then(response => {
