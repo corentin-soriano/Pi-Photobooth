@@ -37,6 +37,17 @@
 }
 
 /**
+ * Generic classes.
+ */
+.bg-orange {
+    background-color: rgb(255, 123, 0);
+}
+
+.bg-red {
+    background-color: red;
+}
+
+/**
  * Elements by name.
  */
 
@@ -70,14 +81,6 @@ h1 {
 .background-item img {
     max-height: 100%;
     max-width: 100%;
-}
-
-.bg-orange {
-    background-color: rgb(255, 123, 0);
-}
-
-.bg-red {
-    background-color: red;
 }
 
 /* Button capture */
