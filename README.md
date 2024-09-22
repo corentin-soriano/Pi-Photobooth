@@ -7,6 +7,7 @@
 - Optionally add custom text and date/time on pictures.
 - English and French translations.
 - All time counters for pictures and prints.
+- Can send webhooks for some data (ex: printer unavailable).
 
 # UI preview
 Preview page:  
