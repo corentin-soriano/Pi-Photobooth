@@ -9,7 +9,20 @@
 - All time counters for pictures and prints.
 
 # UI preview
-Coming soon...
+Preview page:  
+<img src="screenshots/01_preview_page.png" alt="Preview page" style="width: 50%;" />
+
+Preview page with custom background:  
+<img src="screenshots/02_preview_page_bg_replace.png" alt="Preview custom background" style="width: 50%;" />
+
+Picture review with date/time and custom message:  
+<img src="screenshots/03_picture_review.png" alt="Picture review" style="width: 50%;" />
+
+Picture review with unavailable printer:  
+<img src="screenshots/04_picture_review_printer_unavailable.png" alt="Picture review with unavailable printer" style="width: 50%;" />
+
+Settings (admin mode):  
+<img src="screenshots/05_settings.png" alt="Settings" style="width: 50%;" />
 
 # Installation guide
 
