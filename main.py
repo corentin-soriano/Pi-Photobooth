@@ -32,6 +32,7 @@ from includes.language import Language
 from includes.misc import str_to_bool, generate_qrcode
 from includes.print import Printer
 from includes.webdav import WebDAVSync
+from includes.webhook import webhook
 
 
 # Init various objects.
@@ -69,6 +70,14 @@ if str_to_bool(config.get('dav', 'enabled')):
 else:
     webdav = None
 
+# Init webhook object if enabled feature.
+if str_to_bool(config.get('webhook', 'enabled')):
+    webhook = webhook(config.get('webhook', 'url'),
+                      config.get('webhook', 'headers'),
+                      config.get('webhook', 'data'))
+else:
+    webhook = None
+
 
 def handle_exit(*args):
     """
@@ -88,6 +97,10 @@ def handle_exit(*args):
 
     # Send stop event to threads.
     stop_event.set()
+
+    # Notify backend stop.
+    if webhook:
+        webhook.send('backend', 'shutdown')
 
     # Close camera before exit.
     camera.close_camera()
@@ -471,9 +484,37 @@ def get_health():
     # Restricted enpoint.
     check_ip_restrict(request)
 
+    # Get temperature and printer state
+    temp = CPUTemperature().temperature
+    printer_state = printer.monitor_printer()
+
+    # Notify admin via webhook.
+    if webhook:
+
+        if temp < 70:
+            webhook.send('temperature', 'ok')
+        elif temp < 80:
+            webhook.send('temperature', 'little warm')
+        else:
+            webhook.send('temperature', 'overheating')
+
+        # Is printer available?
+        if not printer_state['available']:
+            webhook.send('printer', 'unavailable')
+        else:
+            webhook.send('printer', 'available')
+
+            # Need paper?
+            if printer_state['paper_amount'] < 1:
+                webhook.send('paper_amount', 'empty')
+            elif printer_state['paper_amount'] < 20:
+                webhook.send('paper_amount', 'low')
+            else:
+                webhook.send('paper_amount', 'ok')
+
     response = jsonify({
-        "temp": CPUTemperature().temperature,
-        "printer": printer.monitor_printer(),
+        "temp": temp,
+        "printer": printer_state,
     })
 
     return response
@@ -618,6 +659,10 @@ if __name__ == '__main__':
         dav_thread = threading.Thread(target=dav_sync_thread,
                                       args=(stop_event,))
         dav_thread.start()
+
+    # Notify backend start.
+    if webhook:
+        webhook.send('backend', 'starting')
 
     # Run flask server app.
     listen = config.get('main', 'listen')

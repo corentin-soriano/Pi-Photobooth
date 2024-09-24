@@ -7,6 +7,7 @@
 - Optionally add custom text and date/time on pictures.
 - English and French translations.
 - All time counters for pictures and prints.
+- Can send webhooks for some data (ex: printer unavailable).
 
 # UI preview
 Preview page:  
@@ -54,7 +55,7 @@ raspi-config
 
 ## Dependencies:
 ```bash
-apt install python3-flask python3-picamera2 python3-qrcode python3-easywebdav git ncat
+apt install python3-flask python3-picamera2 python3-qrcode python3-easywebdav python3-opencv git ncat
 
 # Not available from apt:
 pip3 install rembg --break-system-packages
