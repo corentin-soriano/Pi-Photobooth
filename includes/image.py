@@ -272,7 +272,9 @@ class ImageProcessor:
             font_param = ImageFont.truetype(params['font_familly'], params['font_size'])
 
             # Size of text.
-            text_width, text_height = draw.textsize(params['text'], font=font_param)
+            bbox = draw.textbbox((0, 0), params['text'], font=font_param)
+            text_width = bbox[2] - bbox[0]
+            text_height = bbox[3] - bbox[1]
 
             # Calculated positions from specific edges.
             x = params['offset'][0]
