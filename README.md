@@ -58,7 +58,7 @@ raspi-config
 apt install python3-flask python3-picamera2 python3-qrcode python3-easywebdav python3-opencv git ncat
 
 # Not available from apt:
-pip3 install rembg --break-system-packages
+pip3 install rembg onnxruntime --break-system-packages
 ```
 
 ## Clone this repository in /opt:
