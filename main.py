@@ -427,9 +427,9 @@ def serve_qrcode(filename):
     # Restricted enpoint.
     check_ip_restrict(request.remote_addr)
 
-    # Get full image url.
+    # Get full image url (replace {picture_name} by filename).
     public_url = config.get('qrcode', 'public_url')
-    full_url = public_url + filename
+    full_url = public_url.format(picture_name=filename)
 
     # Generate and send qrcode.
     return send_file(generate_qrcode(full_url), mimetype='image/png')
