@@ -56,6 +56,7 @@ if config.get('cups', 'port') != '':
 
 # Init printer.
 printer = Printer(config.get('cups', 'printer'))
+printer_available = False
 
 # Get GPIO configuration and init ManageGPIO object.
 GPIO_LEGACY = str_to_bool(config.get('gpio', 'legacy_mode'))
@@ -487,6 +488,7 @@ def get_health():
     # Get temperature and printer state
     temp = CPUTemperature().temperature
     printer_state = printer.monitor_printer()
+    global printer_available
 
     # Notify admin via webhook.
     if webhook:
@@ -498,10 +500,13 @@ def get_health():
         else:
             webhook.send('temperature', 'overheating')
 
-        # Is printer available?
-        if not printer_state['available']:
+        # Is printer available? Check two times before send message
+        if not printer_state['available'] and printer_available:
+            printer_available = False
+        elif not printer_state['available'] and not printer_available:
             webhook.send('printer', 'unavailable')
         else:
+            printer_available = True
             webhook.send('printer', 'available')
 
             # Need paper?
