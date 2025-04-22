@@ -14,6 +14,7 @@
     "printer_empty_media": "Empty paper:&nbsp;<span id=\"printer-media-state\">0</span>%",
     "printer_low_media": "Low paper:&nbsp;<span id=\"printer-media-state\">0</span>%",
     "printer_media_amount": "Paper amount:&nbsp;<span id=\"printer-media-state\">0</span>%",
+    "printer_freezed": "Please restart printer",
 
     "_overlay": "Text displayed in overlays.",
     "your_picture": "Your picture",

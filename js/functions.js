@@ -211,6 +211,9 @@ function updatePrinterWarnClasses(className) {
  */
 function handlePrinterState(printer) {
 
+    /* Printer freezed, need restart */
+    if ($('#printer-warn').hasClass('freezed')) return;
+
     /* Printer offline */
     if (!printer.available) {
         updatePrinterWarnClasses('bg-red');
@@ -335,9 +338,13 @@ function power(action) {
 /**
  * Monitor print job and close overlay.
  * 
- * @param {int} job_id ID of job to monitor
+ * @param {int} job_id ID of job to monitor.
+ * @param {int} attempt Attempt number.
  */
-function wait_print_job(job_id) {
+function wait_print_job(job_id, attempt = 0) {
+
+    /* Wait max 1 min (retry each 500 ms) */
+    const max_attempt = 120;
 
     /* Request informations */
     $.ajax({
@@ -346,12 +353,20 @@ function wait_print_job(job_id) {
         success: function(response) {
 
             /* Print not completed */
-            if (response.state === true) {
+            if (response.state === true && attempt < max_attempt) {
 
                 /* Wait 500ms and retry */
                 setTimeout(function() {
-                    wait_print_job(response.job_id);
+                    wait_print_job(response.job_id, attempt + 1);
                 }, 500);
+            }
+
+            /* Printer freezed, close overlay and display warning message */
+            else if (response.state === true && attempt >= max_attempt) {
+                $('#printer-warn').addClass('freezed')
+                                  .html(lang.printer_freezed);
+                $('#print-overlay').hide();
+                $('#review #print').hide();
             }
 
             /* Print completed, block the user for a few more seconds */

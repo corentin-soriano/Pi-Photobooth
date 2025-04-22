@@ -14,6 +14,7 @@
     "printer_empty_media": "Plus de papier :&nbsp;<span id=\"printer-media-state\">0</span>%",
     "printer_low_media": "Réserve papier faible :&nbsp;<span id=\"printer-media-state\">0</span>%",
     "printer_media_amount": "Réserve papier :&nbsp;<span id=\"printer-media-state\">0</span>%",
+    "printer_freezed": "Redémarrez l'imprimante",
 
     "_overlay": "Texte affiché dans les overlays.",
     "your_picture": "Votre photo",
