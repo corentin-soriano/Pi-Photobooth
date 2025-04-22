@@ -193,6 +193,18 @@ function checkGPIOAdmin() {
 }
 
 /**
+ * Remove bg-* classes on #printer-warn and add the given one.
+ *
+ * @param {string} className The class to add.
+ */
+function updatePrinterWarnClasses(className) {
+    $('#printer-warn').removeClass('bg-green')
+                      .removeClass('bg-orange')
+                      .removeClass('bg-red')
+                      .addClass(className);
+}
+
+/**
  * Handle printer and media state.
  * 
  * @param {string} printer printer json state.
@@ -201,14 +213,14 @@ function handlePrinterState(printer) {
 
     /* Printer offline */
     if (!printer.available) {
-        $('#printer-warn').removeClass('bg-orange').addClass('bg-red');
+        updatePrinterWarnClasses('bg-red');
         $('#printer-warn').html(lang.printer_unavailable);
         $('#printer-warn').show();
         $('#review #print').hide();
 
     /* Empty paper */
     } else if (printer.paper_amount < 1) {
-        $('#printer-warn').removeClass('bg-orange').addClass('bg-red');
+        updatePrinterWarnClasses('bg-red');
         $('#printer-warn').html(lang.printer_empty_media);
         $('#printer-media-state').html(printer.paper_amount);
         $('#printer-warn').show();
@@ -216,7 +228,7 @@ function handlePrinterState(printer) {
 
     /* Low paper */
     } else if (printer.paper_amount < 20) {
-        $('#printer-warn').removeClass('bg-red').addClass('bg-orange');
+        updatePrinterWarnClasses('bg-orange');
         $('#printer-warn').html(lang.printer_low_media);
         $('#printer-media-state').html(printer.paper_amount);
         $('#printer-warn').show();
@@ -224,8 +236,13 @@ function handlePrinterState(printer) {
 
     /* Printer available */
     } else {
-        $('#printer-warn').hide();
+        updatePrinterWarnClasses('bg-green');
+        $('#printer-warn').html(lang.printer_media_amount);
+        $('#printer-media-state').html(printer.paper_amount);
         $('#review #print').show();
+
+        if ($('#settings-overlay').is(':visible')) $('#printer-warn').show();
+        else $('#printer-warn').hide();
     }
 }
 

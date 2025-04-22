@@ -39,6 +39,10 @@
 /**
  * Generic classes.
  */
+.bg-green {
+    background-color: green;
+}
+
 .bg-orange {
     background-color: rgb(255, 123, 0);
 }
