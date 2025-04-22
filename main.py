@@ -300,6 +300,21 @@ def print_file(action, job):
     return jsonify(result)
 
 
+@app.route('/freezed-printer')
+def freezed_printer():
+    """
+    Send a webhook to alert that the printer is freezed and purge the printer
+    queue.
+
+    Returns:
+        Response: Empty response with 204 HTTP code.
+    """
+    webhook.send('printer', 'frozen')
+    printer.purge_queue()
+
+    return '', 204
+
+
 @app.route('/js/<path:filename>')
 def serve_js(filename):
     """

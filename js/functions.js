@@ -336,6 +336,16 @@ function power(action) {
 }
 
 /**
+ * Send alert to backend when printer seems frozen.
+ */
+function send_freezed_printer_alert() {
+    $.ajax({
+        url: '/freezed-printer',
+        method: 'GET',
+    });
+}
+
+/**
  * Monitor print job and close overlay.
  * 
  * @param {int} job_id ID of job to monitor.
@@ -367,6 +377,7 @@ function wait_print_job(job_id, attempt = 0) {
                                   .html(lang.printer_freezed);
                 $('#print-overlay').hide();
                 $('#review #print').hide();
+                send_freezed_printer_alert();
             }
 
             /* Print completed, block the user for a few more seconds */
