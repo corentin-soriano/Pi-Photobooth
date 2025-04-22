@@ -104,7 +104,7 @@ function captureImage(lang) {
             $('#countdown-overlay').text(lang.wait_capture);
 
             /* Get actual background */
-            let background = $('.background-item.selected').data('background');
+            const background = $('.background-item.selected').data('background');
 
             /* Take photo */
             fetch('/capture/' + background)
@@ -144,7 +144,7 @@ function generateBackgroundList() {
             /* Json list with all available backgrounds */
             data.forEach(function(imageName) {
                 /* Add new item list for each available background */
-                let listItem = '<li class="background-item" data-background="' + imageName + '"><img src="/background/' + imageName + '" /></li>';
+                const listItem = '<li class="background-item" data-background="' + imageName + '"><img src="/background/' + imageName + '" /></li>';
                 $('#background-list').append(listItem);
             });
 
@@ -379,7 +379,7 @@ function send_print() {
     $('#print-overlay').show();
 
     /* Get picture path */
-    let path = $('#review #photo img').attr('src');
+    const path = $('#review #photo img').attr('src');
 
     /* Request print */
     $.ajax({
@@ -403,12 +403,12 @@ function send_print() {
 function refreshSettingsForm(settings) {
 
     /* Convert python bool to js bool */
-    let green_background = settings.green_background.toLowerCase() === 'true';
-    let disable_ai_cut = settings.disable_ai_cut.toLowerCase() === 'true';
-    let enable_date = settings.enable_date.toLowerCase() === 'true';
-    let enable_time = settings.enable_time.toLowerCase() === 'true';
-    let bg_enabled = settings.bg_enabled.toLowerCase() === 'true';
-    let qrcode_enabled = settings.qrcode_enabled.toLowerCase() === 'true';
+    const green_background = settings.green_background.toLowerCase() === 'true';
+    const disable_ai_cut = settings.disable_ai_cut.toLowerCase() === 'true';
+    const enable_date = settings.enable_date.toLowerCase() === 'true';
+    const enable_time = settings.enable_time.toLowerCase() === 'true';
+    const bg_enabled = settings.bg_enabled.toLowerCase() === 'true';
+    const qrcode_enabled = settings.qrcode_enabled.toLowerCase() === 'true';
 
     /* Update form data */
     $('#setting-enable-background').prop('checked', bg_enabled);
@@ -466,7 +466,7 @@ function getSettings() {
 function sendSettings() {
 
     /* Get form data */
-    let data = {
+    const data = {
         bg_enabled: $('#setting-enable-background').is(':checked'),
         green_background: $('#setting-green-background').is(':checked'),
         disable_ai_cut: $('#setting-ai-background').is(':checked'),

@@ -132,7 +132,7 @@ function bgItemEventListenerAdd() {
         $(this).addClass('selected');
 
         /* Change video feed */
-        let background = $(this).data('background');
+        const background = $(this).data('background');
         $('#preview-img').attr('src', '/video_feed/' + background);
 
     });
