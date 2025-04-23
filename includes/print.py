@@ -71,7 +71,10 @@ class Printer:
             # If no printer name given or if unavailable, use the first.
             elif self._printer_name == '' or self._printer_name not in printers:
                 self._printer_name = printers[0]
-            
+
+            # Purge queue on (re)start
+            self.purge_queue()
+
             # Otherwise, keep self._printer_name value.
             return 0
 
@@ -239,3 +242,21 @@ class Printer:
             "paper_amount": paper_amount,
         }
 
+
+    def purge_queue(self):
+        """
+        Purge the printer queue. Any unfinished jobs will be canceled.
+        """
+
+        try:
+            # Get job state.
+            jobs = self._printer.getJobs(which_jobs='not-completed',
+                                         requested_attributes=['job-id'])
+
+            for job_id in jobs.keys():
+                self._printer.cancelJob(job_id)
+
+        except Exception as e:
+            print(f'Error purging printer queue: {e}')
+            self._printer = None
+            return False

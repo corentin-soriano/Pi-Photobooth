@@ -104,7 +104,7 @@ function captureImage(lang) {
             $('#countdown-overlay').text(lang.wait_capture);
 
             /* Get actual background */
-            let background = $('.background-item.selected').data('background');
+            const background = $('.background-item.selected').data('background');
 
             /* Take photo */
             fetch('/capture/' + background)
@@ -144,7 +144,7 @@ function generateBackgroundList() {
             /* Json list with all available backgrounds */
             data.forEach(function(imageName) {
                 /* Add new item list for each available background */
-                let listItem = '<li class="background-item" data-background="' + imageName + '"><img src="/background/' + imageName + '" /></li>';
+                const listItem = '<li class="background-item" data-background="' + imageName + '"><img src="/background/' + imageName + '" /></li>';
                 $('#background-list').append(listItem);
             });
 
@@ -193,22 +193,37 @@ function checkGPIOAdmin() {
 }
 
 /**
+ * Remove bg-* classes on #printer-warn and add the given one.
+ *
+ * @param {string} className The class to add.
+ */
+function updatePrinterWarnClasses(className) {
+    $('#printer-warn').removeClass('bg-green')
+                      .removeClass('bg-orange')
+                      .removeClass('bg-red')
+                      .addClass(className);
+}
+
+/**
  * Handle printer and media state.
  * 
  * @param {string} printer printer json state.
  */
 function handlePrinterState(printer) {
 
+    /* Printer freezed, need restart */
+    if ($('#printer-warn').hasClass('freezed')) return;
+
     /* Printer offline */
     if (!printer.available) {
-        $('#printer-warn').removeClass('bg-orange').addClass('bg-red');
+        updatePrinterWarnClasses('bg-red');
         $('#printer-warn').html(lang.printer_unavailable);
         $('#printer-warn').show();
         $('#review #print').hide();
 
     /* Empty paper */
     } else if (printer.paper_amount < 1) {
-        $('#printer-warn').removeClass('bg-orange').addClass('bg-red');
+        updatePrinterWarnClasses('bg-red');
         $('#printer-warn').html(lang.printer_empty_media);
         $('#printer-media-state').html(printer.paper_amount);
         $('#printer-warn').show();
@@ -216,7 +231,7 @@ function handlePrinterState(printer) {
 
     /* Low paper */
     } else if (printer.paper_amount < 20) {
-        $('#printer-warn').removeClass('bg-red').addClass('bg-orange');
+        updatePrinterWarnClasses('bg-orange');
         $('#printer-warn').html(lang.printer_low_media);
         $('#printer-media-state').html(printer.paper_amount);
         $('#printer-warn').show();
@@ -224,8 +239,13 @@ function handlePrinterState(printer) {
 
     /* Printer available */
     } else {
-        $('#printer-warn').hide();
+        updatePrinterWarnClasses('bg-green');
+        $('#printer-warn').html(lang.printer_media_amount);
+        $('#printer-media-state').html(printer.paper_amount);
         $('#review #print').show();
+
+        if ($('#settings-overlay').is(':visible')) $('#printer-warn').show();
+        else $('#printer-warn').hide();
     }
 }
 
@@ -316,11 +336,25 @@ function power(action) {
 }
 
 /**
+ * Send alert to backend when printer seems frozen.
+ */
+function send_freezed_printer_alert() {
+    $.ajax({
+        url: '/freezed-printer',
+        method: 'GET',
+    });
+}
+
+/**
  * Monitor print job and close overlay.
  * 
- * @param {int} job_id ID of job to monitor
+ * @param {int} job_id ID of job to monitor.
+ * @param {int} attempt Attempt number.
  */
-function wait_print_job(job_id) {
+function wait_print_job(job_id, attempt = 0) {
+
+    /* Wait max 1 min (retry each 500 ms) */
+    const max_attempt = 120;
 
     /* Request informations */
     $.ajax({
@@ -329,12 +363,21 @@ function wait_print_job(job_id) {
         success: function(response) {
 
             /* Print not completed */
-            if (response.state === true) {
+            if (response.state === true && attempt < max_attempt) {
 
                 /* Wait 500ms and retry */
                 setTimeout(function() {
-                    wait_print_job(response.job_id);
+                    wait_print_job(response.job_id, attempt + 1);
                 }, 500);
+            }
+
+            /* Printer freezed, close overlay and display warning message */
+            else if (response.state === true && attempt >= max_attempt) {
+                $('#printer-warn').addClass('freezed')
+                                  .html(lang.printer_freezed);
+                $('#print-overlay').hide();
+                $('#review #print').hide();
+                send_freezed_printer_alert();
             }
 
             /* Print completed, block the user for a few more seconds */
@@ -362,7 +405,7 @@ function send_print() {
     $('#print-overlay').show();
 
     /* Get picture path */
-    let path = $('#review #photo img').attr('src');
+    const path = $('#review #photo img').attr('src');
 
     /* Request print */
     $.ajax({
@@ -386,12 +429,12 @@ function send_print() {
 function refreshSettingsForm(settings) {
 
     /* Convert python bool to js bool */
-    let green_background = settings.green_background.toLowerCase() === 'true';
-    let disable_ai_cut = settings.disable_ai_cut.toLowerCase() === 'true';
-    let enable_date = settings.enable_date.toLowerCase() === 'true';
-    let enable_time = settings.enable_time.toLowerCase() === 'true';
-    let bg_enabled = settings.bg_enabled.toLowerCase() === 'true';
-    let qrcode_enabled = settings.qrcode_enabled.toLowerCase() === 'true';
+    const green_background = settings.green_background.toLowerCase() === 'true';
+    const disable_ai_cut = settings.disable_ai_cut.toLowerCase() === 'true';
+    const enable_date = settings.enable_date.toLowerCase() === 'true';
+    const enable_time = settings.enable_time.toLowerCase() === 'true';
+    const bg_enabled = settings.bg_enabled.toLowerCase() === 'true';
+    const qrcode_enabled = settings.qrcode_enabled.toLowerCase() === 'true';
 
     /* Update form data */
     $('#setting-enable-background').prop('checked', bg_enabled);
@@ -449,7 +492,7 @@ function getSettings() {
 function sendSettings() {
 
     /* Get form data */
-    let data = {
+    const data = {
         bg_enabled: $('#setting-enable-background').is(':checked'),
         green_background: $('#setting-green-background').is(':checked'),
         disable_ai_cut: $('#setting-ai-background').is(':checked'),

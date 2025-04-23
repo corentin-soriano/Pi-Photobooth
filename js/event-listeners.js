@@ -81,11 +81,13 @@ $(document).ready(function() {
         /* Refresh form content and display overlay */
         getSettings();
         $('#settings-overlay').show();
+        $('#printer-warn.bg-green').show();
     });
 
     /* Click on settings close button */
     $('#settings-close').on('click', function() {
         $('#settings-overlay').hide();
+        $('#printer-warn.bg-green').hide();
     });
 
     /* Hide overlay */
@@ -130,7 +132,7 @@ function bgItemEventListenerAdd() {
         $(this).addClass('selected');
 
         /* Change video feed */
-        let background = $(this).data('background');
+        const background = $(this).data('background');
         $('#preview-img').attr('src', '/video_feed/' + background);
 
     });
