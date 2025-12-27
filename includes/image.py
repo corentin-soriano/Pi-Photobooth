@@ -20,6 +20,7 @@ import cv2
 import numpy as np
 import os
 import skimage.exposure
+from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
 from rembg import remove, new_session
 
@@ -29,10 +30,15 @@ class ImageProcessor:
     Class used to modify images.
 
     Attributes:
-        _operations (list): with all requested operations.
+        _current_bg_name (str): Current stored background name.
+        _current_bg_img (Image): Current stored background image.
         _image (ByteIO): Image to modify.
+        _operations (list): with all requested operations.
     """
-
+    _current_bg_name: str = ''
+    _current_bg_img: Image = None
+    _image: Image = None
+    _operations: list = None
 
     def __init__(self, image):
         """
@@ -205,6 +211,30 @@ class ImageProcessor:
         return Image.fromarray(result)
 
 
+    def open_resize_background(self, background: dict, size: int):
+        """
+        Resize background image if needed and cache it.
+
+        Args:
+            background (dict): Infos about requested background.
+            size (int): Requested width (px).
+        """
+        # Check if requested background exists.
+        if not os.path.exists('backgrounds/' + background['name']):
+            return
+
+        self._current_bg_img = None
+        self._current_bg_name = None
+        bg_img = Image.open('backgrounds/' + background['name']).convert("RGBA")
+
+        # Resize background to foreground img size if needed.
+        if size != bg_img.size:
+            bg_img = bg_img.resize(size)
+        
+        self._current_bg_img = bg_img
+        self._current_bg_name = background['name']
+
+
     def commit(self):
         """
         Commit all pending operations on image.
@@ -244,19 +274,14 @@ class ImageProcessor:
                 else:
                     img = self.white_background_erase(img)
 
-            # Check if requested background exists.
-            if os.path.exists('backgrounds/' + background['name']):
-
                 # Open background image.
-                bg_img = Image.open('backgrounds/' + background['name']).convert("RGBA")
-
-                # Resize background to foreground img size if needed.
-                if img.size != bg_img.size:
-                    bg_img = bg_img.resize(img.size)
+                if self._current_bg_name != background['name'] or self._current_bg_img.size != img.size:
+                    self.open_resize_background(background, img.size)
 
                 # Mirror background.
+                bg_img = self._current_bg_img
                 if background['mirror']:
-                    bg_img = bg_img.transpose(Image.FLIP_LEFT_RIGHT)
+                    bg_img = self._current_bg_img.transpose(Image.FLIP_LEFT_RIGHT)
 
                 # Combine main image and background.
                 img = Image.alpha_composite(bg_img, img)
