@@ -91,7 +91,7 @@ class Camera:
             picam2.configure(picam2.create_preview_configuration(main=preview, transform=mirror))
         else:
             # Get max resolution.
-            size = picam2.sensor_modes[3]['size']
+            size = picam2.sensor_modes[4]['size']
 
             # If image requested with lower resolution.
             if reduce_size:
